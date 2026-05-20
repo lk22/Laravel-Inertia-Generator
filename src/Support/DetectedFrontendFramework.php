@@ -1,6 +1,6 @@
 <?php
 
-namespace LeoKnudsen\LaravelInertiaGenerator\Support;
+namespace Leoknudsen\LaravelInertiaGenerator\Support;
 
 use leoknudsen\LaravelInertiaGenerator\Support\FrameworkProfile;
 

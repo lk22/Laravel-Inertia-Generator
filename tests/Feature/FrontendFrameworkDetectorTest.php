@@ -17,10 +17,12 @@ class FrontendFrameworkDetectorTest extends TestCase
             ]
         ]);
 
-        $detected = $this->app->make(FrontendFrameworkDetector::class)->detect();
+        $frameworkDetector = $this->app->make(FrontendFrameworkDetector::class);
 
-        $this->assertSame('react', $detected->profile->name);
-        $this->assertSame('package.json dependency', $detected->source);
+        $detectedPackageJson = $frameworkDetector->detect(); // Initial call to trigger var_dump statements
+
+        $this->assertSame('react', $detectedPackageJson->profile->name);
+        $this->assertSame('package.json dependencies', $detectedPackageJson->source);
     }
 
     public function test_it_detects_vue_from_entry_file_when_package_json_is_missing(): void

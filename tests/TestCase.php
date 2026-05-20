@@ -31,11 +31,12 @@ abstract class TestCase extends OrchestraTestCase
         $this->files->ensureDirectoryExists(self::workbenchPath('resources/js/pages'));
         $this->files->ensureDirectoryExists(self::workbenchPath('resources/js/components'));
         $this->files->ensureDirectoryExists(self::workbenchPath('resources/js/layouts'));
+        // Ensure package.json is absent at the start of each test
     }
 
     protected function tearDown(): void
     {
-        $this->files->delete(base_path('package.json'));
+        // $this->files->delete(base_path('package.json'));
         $this->files->deleteDirectory(base_path('resources'));
         $this->files->cleanDirectory(base_path('config'));
     }

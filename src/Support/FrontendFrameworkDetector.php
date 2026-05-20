@@ -44,7 +44,7 @@ class FrontendFrameworkDetector
             return null;
         }
 
-        $packageJson = json_decode($this->files->get($packageJsonPath));
+        $packageJson = json_decode($this->files->get($packageJsonPath), true);
         if ( ! is_array($packageJson)) {
             return null;
         }
