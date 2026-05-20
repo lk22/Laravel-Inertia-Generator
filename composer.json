@@ -1,0 +1,38 @@
+{
+    "name": "leoknudsen/laravel-inertia-generator",
+    "require": {
+        "illuminate/console": "^13.11",
+        "illuminate/filesystem": "^13.11",
+        "illuminate/support": "^13.11"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^11.1",
+        "phpunit/phpunit": "^13.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Leoknudsen\\LaravelInertiaGenerator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Leoknudsen\\LaravelInertiaGenerator\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Leoknudsen\\LaravelInertiaGenerator\\Providers\\InertiaGeneratorServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "authors": [
+        {
+            "name": "lk22",
+            "email": "nightskater-220@hotmail.com"
+        }
+    ]
+}
