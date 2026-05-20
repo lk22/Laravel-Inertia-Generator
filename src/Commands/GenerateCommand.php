@@ -16,9 +16,7 @@ class GenerateCommand extends Command
         {--force : Overwrite existing files without prompting}";
 
     protected $description = 'Generate an Inertia page/component based on the detected frontend framework';
-
     protected string $type;
-    protected string $name;
     protected string $stack;
     protected bool $force;
 
@@ -30,7 +28,6 @@ class GenerateCommand extends Command
                 : $detector->detect();
         } catch (CouldNotDetectFrameworkException $e) {
             $this->components->error($e->getMessage());
-
             return self::FAILURE;
         }
 
@@ -42,15 +39,17 @@ class GenerateCommand extends Command
         ));
 
         // Here you would add the logic to generate the page/component based on the detected framework
-        $this->name = $this->option('name') ?? 'UnnamedComponent';
-        $this->force = (bool) $this->option('force');
-        $this->stack = $framework->profile->name;
-        $this->type = $this->option('type') ?? 'component';
+        $name = $this->option('name') ?? 'UnnamedComponent';
+        $force = (bool) $this->option('force');
+        $stack = $framework->profile->name;
+        $type = $this->option('type') ?? 'component';
+
+        // generate the file using the appropriate stub based on the detected framework and provided type/name
         $this->generate(
-            $this->type,
-            $this->name,
-            $framework->profile->name,
-            $this->force
+            $type,
+            $name,
+            $stack,
+            $force
         );
 
         return Command::SUCCESS;
@@ -79,6 +78,13 @@ class GenerateCommand extends Command
         };
 
         $filePath = base_path("resources/js/components/{$name}.{$extension}");
+
+        // throwing an error if the file already exists and --force is not set
+        if (file_exists($filePath) && ! $force) {
+            $this->error("File already exists at {$filePath}. Use --force to overwrite.");
+            return;
+        }
+
         file_put_contents($filePath, $stubContent);
         $this->info("File generated at: {$filePath}");
     }

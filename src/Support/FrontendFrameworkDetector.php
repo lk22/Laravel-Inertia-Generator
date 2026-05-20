@@ -4,6 +4,7 @@ namespace Leoknudsen\LaravelInertiaGenerator\Support;
 
 use Illuminate\Filesystem\Filesystem;
 use Leoknudsen\LaravelInertiaGenerator\Support\DetectedFrontendFramework;
+use Leoknudsen\LaravelInertiaGenerator\Support\FrameworkProfileRepository as FrameworkProfile;
 use Leoknudsen\LaravelInertiaGenerator\Exceptions\CouldNotDetectFrameworkException;
 
 class FrontendFrameworkDetector
@@ -11,15 +12,30 @@ class FrontendFrameworkDetector
     public function __construct(
         private readonly Filesystem $files,
         private readonly string $basePath,
-        private readonly FrameworkProfileRepository $profileRepository
+        private readonly FrameworkProfile $profileRepository
     ){}
 
-    public function detect(?string $stack = null): DetectedFrontendFramework
+    private function packageJsonDetected(): bool
+    {
+        $packageJsonPath = $this->getPackageJsonPath();
+        if ( ! $this->files->exists($packageJsonPath)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function getPackageJsonPath(): string
+    {
+        return $this->path('package.json');
+    }
+
+    public function detect(?string $stack = null): ?DetectedFrontendFramework
     {
         if ($stack != null && $stack !== '') {
             return new DetectedFrontendFramework(
                 $this->profileRepository->for($stack),
-                'command options',
+                'package.json',
                 sprintf('--stack=%s', $stack)
             );
         }
@@ -39,19 +55,15 @@ class FrontendFrameworkDetector
 
     public function detectFromPackageJson(): ?DetectedFrontendFramework
     {
-        $packageJsonPath = $this->path('package.json');
-        if ( ! $this->files->exists($packageJsonPath)) {
-            return null;
-        }
+        $detectedPackageJson = $this->packageJsonDetected();
+        $decodedPackageJson = json_decode($this->files->get($this->getPackageJsonPath()), true);
 
-        $packageJson = json_decode($this->files->get($packageJsonPath), true);
-        if ( ! is_array($packageJson)) {
-            return null;
-        }
+        if ( ! $detectedPackageJson ) { return null; }
+        if ( ! is_array($decodedPackageJson) ) { return null; }
 
         $dependencies = array_keys(array_merge(
-            $packageJson['dependencies'] ?? [],
-            $packageJson['devDependencies'] ?? []
+            $decodedPackageJson['dependencies'] ?? [],
+            $decodedPackageJson['devDependencies'] ?? []
         ));
 
         $matchedProfiles = [];
@@ -62,12 +74,13 @@ class FrontendFrameworkDetector
         }
 
         if (count($matchedProfiles) > 1) {
-            throw CouldNotDetectFrameworkException::multipleStacks(array_map(fn($profile): string => $profile->name, $matchedProfiles));
+            $stacks = array_map(fn($profile): string => $profile->name, $matchedProfiles);
+            throw CouldNotDetectFrameworkException::multipleStacks($stacks);
         }
 
+        // if any single adapter is found, we can confidently detect the framework based on the package.json dependencies
         if (count($matchedProfiles) === 1) {
             $profile = $matchedProfiles[0];
-
             return new DetectedFrontendFramework(
                 $profile,
                 'package.json dependencies',
@@ -81,7 +94,6 @@ class FrontendFrameworkDetector
     public function detectFromEntryPoints(): ?DetectedFrontendFramework
     {
         $matches = [];
-
         foreach($this->profileRepository->all() as $profile) {
             foreach ($profile->entryFiles as $entryFile) {
                 $path = $this->path($entryFile);

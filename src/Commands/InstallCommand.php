@@ -11,43 +11,25 @@ use Leoknudsen\LaravelInertiaGenerator\Support\StubPublisher;
 class InstallCommand extends Command
 {
     protected $signature = 'inertia-generator:install
-        {--stack= : Manually specify the frontend framework to target (e.g. "vue3", "react", "svelte")}
+        {--stack= : Manually specify the frontend framework to target (e.g. "vue", "react", "svelte")}
         {--force : Overwrite existing files without prompting}';
 
     protected $description = 'Publish configuration and starter-kit-aware Inertia extension stubs';
 
-    public function handle(FrontendFrameworkDetector $detector, StubPublisher $publisher): int
+    public function handle(): int
     {
-        try {
-            $framework = $this->option('stack') !== null && $this->option('stack') !== ''
-                ? $detector->detect($this->option('stack'))
-                : $detector->detect();
-        } catch (CouldNotDetectFrameworkException $e) {
-            $this->components->error($e->getMessage());
-
-            return self::FAILURE;
-        }
-
+        // make sure the config file is published first so that the framework profiles are available for detection
         $this->call('vendor:publish', [
-            '--tag' => 'inertia-generator-config',
-            '--force' => (bool) $this->option('force')
+            '--tag' => 'inertia-generator-config'
         ]);
+        $this->info('Config file published successfully.');
 
-        $generatedFiles = $publisher->publish($framework->profile, (bool) $this->option('force'));
-
-        $this->components->info(sprintf(
-            'Detected &s via &s: %s',
-            $framework->profile->label(),
-            $framework->source,
-            $framework->evidence
-        ));
-
-        $this->table(
-            ['generated files'],
-            array_map(static fn(string $file): array => [$file], $generatedFiles)
-        );
-
-        $this->info("Stubs for the '{$framework->profile->label()}' frontend framework have been published successfully.");
+        // Now publish the stubs, which may depend on the config for determining which ones to publish
+        $this->call('vendor:publish', [
+            '--tag' => 'inertia-generator-stubs'
+        ]);
+        $this->info('Inertia extension stubs published successfully.');
+        $this->info('Inertia extension installation complete!');
         return Command::SUCCESS;
     }
 }

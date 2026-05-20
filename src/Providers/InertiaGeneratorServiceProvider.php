@@ -5,6 +5,7 @@ namespace LeoKnudsen\LaravelInertiaGenerator\Providers;
 use Illuminate\Support\ServiceProvider;
 
 use Leoknudsen\LaravelInertiaGenerator\Commands\InstallCommand;
+use Leoknudsen\LaravelInertiaGenerator\Commands\GenerateCommand;
 use Leoknudsen\LaravelInertiaGenerator\Support\FrameworkProfileRepository as FrameworkProfile;
 use Leoknudsen\LaravelInertiaGenerator\Support\FrontendFrameworkDetector;
 use Leoknudsen\LaravelInertiaGenerator\Support\StubPublisher;
@@ -16,7 +17,7 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
 
         $this->app->singleton(FrameworkProfile::class, function ($app) {
             return new FrameworkProfile(
-                $app['config']->get('inertia-generator.framework_profiles', [])
+                $app['config']->get('inertia-generator.frameworks', [])
             );
         });
 
@@ -33,18 +34,19 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
                 $app['files'],
                 $app->basePath(),
                 $app['config']->get('inertia-generator.stubs_path', __DIR__.'/../../stubs'),
-                dirname(__DIR__, 2)
+                $app['config']->get('inertia-generator.output_directory', 'inertia-extended')
             );
         });
     }
     public function boot() {
         $this->publishes([
-            __DIR__.'/../../config/inertia-generator.php' => config_path('inertia-generator.php'),
+            __DIR__.'/../../config/laravel-inertia-generator.php' => config_path('laravel-inertia-generator.php'),
         ], 'config');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
+                GenerateCommand::class
             ]);
         }
     }

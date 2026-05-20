@@ -8,9 +8,11 @@ class FrameworkProfileRepository
 {
     private array $profiles = [];
 
-    public function __construct(array $configuration)
+    public function __construct()
     {
-        foreach ($configuration as $name => $profileConfiguration) {
+        $frameworks = config('inertia-generator.frameworks', []);
+
+        foreach ($frameworks as $name => $profileConfiguration) {
             $this->profiles[$name] = FrameworkProfile::fromConfig($name, $profileConfiguration);
         }
     }
@@ -18,7 +20,7 @@ class FrameworkProfileRepository
     public function for(string $name): FrameworkProfile
     {
         if (! array_key_exists($name, $this->profiles)) {
-            throw CouldNotDetectFrameworkException::missingConfiguration("No framework profile found for '$name'", "framework_profiles.$name");
+            throw CouldNotDetectFrameworkException::missingConfiguration("No framework profile found for '$name'", "framework.$name");
         }
 
         return $this->profiles[$name];

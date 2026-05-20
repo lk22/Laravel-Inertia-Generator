@@ -22,9 +22,9 @@ class StubPublisher
         ];
 
         $targets = [
-            'page' => $directories['page'] . '/' . $this->outputDirectory . '/StarterKitShowcase.' . $profile->extension('page'),
-            'component' => $directories['component'] . '/' . $this->outputDirectory . '/StarterKitShowcase.' . $profile->extension('component'),
-            'layout' => $directories['layout'] . '/' . $this->outputDirectory . '/StarterKitShowcase.' . $profile->extension('layout'),
+            'page' => $directories['page'] . '/' . $this->outputDirectory . '/.' . $profile->extension('page'),
+            'component' => $directories['component'] . '/' . $this->outputDirectory . '/.' . $profile->extension('component'),
+            'layout' => $directories['layout'] . '/' . $this->outputDirectory . '/.' . $profile->extension('layout'),
         ];
 
         $replacements = [
@@ -38,7 +38,7 @@ class StubPublisher
             $absoluteTarget = $this->path($relativeTarget);
             $absoluteDirectory = dirname($absoluteTarget);
 
-            if ( ! $this->files->isDirecotory($absoluteDirectory) ) {
+            if ( ! $this->files->isDirectory($absoluteDirectory) ) {
                 $this->files->makeDirectory($absoluteDirectory, 0755, true);
             }
 
@@ -46,7 +46,8 @@ class StubPublisher
                 throw new RuntimeException("File already exists at $relativeTarget. Use --force to overwrite.");
             }
 
-            $stubPath = $this->packagePath . '/resources/stubs' . $profile->stubSet . '/' . $type . '.stub';
+            $stubPath = $this->packagePath . '/stubs/' . $profile->stubSet . '/' . $type . '.stub';
+            $stubPath = base_path($stubPath);
             if (! $this->files->exists($stubPath)) {
                 throw new RuntimeException("Stub file not found for type '$type' at expected path: $stubPath");
             }
@@ -76,6 +77,7 @@ class StubPublisher
     public function path(string $relativePath): string {
         return $this->basePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
     }
+
     public function relativeImportPath(string $from, string $to): string {
         $fromSegments = $this->segments($from);
         $toSegments = $this->segments($to);

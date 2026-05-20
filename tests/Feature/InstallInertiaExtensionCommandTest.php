@@ -14,8 +14,10 @@ class InstallInertiaExtensionCommandTest extends TestCase
             ]
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+        $this->writeStubFilesForFramework('react');
+
         $this->artisan('inertia-generator:install')
-            ->expectsOutput('Publishing Inertia extension stubs...')
+            ->expectsOutput('Config file published successfully.')
             ->expectsOutput('Inertia extension installation complete!')
             ->assertSuccessful();
 
@@ -26,12 +28,23 @@ class InstallInertiaExtensionCommandTest extends TestCase
 
     public function test_install_command_can_be_forced_to_generate_vue_stubs(): void
     {
-        $this->artisan('inertia-generator:install', ['--stack' => 'vue'])
-            ->expectsOutputToContain('Detected frontend framework: Vue via command options')
+        $this->writeStubFilesForFramework('vue');
+        $this->artisan('inertia-generator:install')
+            ->expectsOutputToContain('Inertia extension stubs published successfully')
             ->assertSuccessful();
 
         $this->assertFileExists(base_path('resources/js/pages/inertia-extended/StarterKitShowcase.vue'));
         $this->assertFileExists(base_path('resources/js/components/inertia-extended/StarterKitPanel.vue'));
         $this->assertFileExists(base_path('resources/js/layouts/inertia-extended/StarterKitLayout.vue'));
+    }
+
+    private function writeStubFilesForFramework(string $framework): void
+    {
+        $stubTypes = ['page', 'component', 'layout'];
+        foreach ($stubTypes as $type) {
+            $stubPath = base_path("stubs/{$framework}/{$type}.stub");
+            $this->files->ensureDirectoryExists(dirname($stubPath));
+            $this->files->put($stubPath, "// Stub content for {$framework} {$type}");
+        }
     }
 }
