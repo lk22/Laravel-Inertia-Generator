@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Laravel Inertia Generator workflow</title>
+  <desc id="desc">Install prepares config and detection. Generate creates page, component, and layout files for React, Vue, or Svelte.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#eef2ff" />
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+    <style>
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 14; }
+      .title { font: 700 20px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .text { font: 500 15px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .small { font: 500 14px 'Segoe UI', Arial, sans-serif; fill: #475569; }
+      .code { font: 600 13px 'Consolas', 'Courier New', monospace; fill: #0f172a; }
+      .pill { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1; rx: 12; }
+      .accent { fill: #2563eb; }
+      .accentText { font: 700 14px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="420" fill="url(#bg)"/>
+
+  <rect class="box" x="40" y="90" width="300" height="240" />
+  <text class="title" x="70" y="130">1. Setup</text>
+  <text class="text" x="70" y="165">Publish package config</text>
+  <text class="text" x="70" y="190">Detect or choose stack</text>
+  <text class="code" x="70" y="230">php artisan inertia-generator:install</text>
+  <rect class="pill" x="70" y="255" width="95" height="26"/>
+  <text class="small" x="83" y="273">--stack=vue</text>
+
+  <rect class="box" x="450" y="65" width="300" height="290" />
+  <text class="title" x="480" y="105">2. Generate</text>
+  <text class="text" x="480" y="140">Create page, component,</text>
+  <text class="text" x="480" y="162">or layout resources</text>
+  <text class="code" x="480" y="205">inertia:generate --type=page</text>
+  <text class="code" x="480" y="228">inertia:generate --type=component</text>
+  <text class="code" x="480" y="251">inertia:generate --type=layout</text>
+  <rect class="pill" x="480" y="275" width="78" height="26"/>
+  <text class="small" x="498" y="293">--force</text>
+
+  <rect class="box" x="860" y="90" width="300" height="240" />
+  <text class="title" x="890" y="130">3. Output</text>
+  <text class="text" x="890" y="165">resources/js/pages/... .tsx/.vue/.svelte</text>
+  <text class="text" x="890" y="190">resources/js/components/... .tsx/.vue/.svelte</text>
+  <text class="text" x="890" y="215">resources/js/layouts/... .tsx/.vue/.svelte</text>
+  <rect class="accent" x="890" y="250" width="220" height="34" rx="17"/>
+  <text class="accentText" x="924" y="272">Framework-aware stubs</text>
+
+  <line x1="340" y1="210" x2="450" y2="210" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="750" y1="210" x2="860" y2="210" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>
