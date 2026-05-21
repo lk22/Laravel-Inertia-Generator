@@ -1,11 +1,12 @@
 <?php
 
-namespace LeoKnudsen\LaravelInertiaGenerator\Commands;
+namespace Leoknudsen\LaravelInertiaGenerator\Commands;
 
 use Illuminate\Console\Command;
 
 use Leoknudsen\LaravelInertiaGenerator\Exceptions\CouldNotDetectFrameworkException;
 use Leoknudsen\LaravelInertiaGenerator\Support\FrontendFrameworkDetector;
+use InvalidArgumentException;
 
 class GenerateCommand extends Command
 {
@@ -13,6 +14,9 @@ class GenerateCommand extends Command
         {--type= : The type of artifact to generate (e.g. 'pages' or 'components' or 'layouts')}
         {--name= : The name of the page/component to generate (e.g. 'Dashboard/Stats' or 'User/Profile')}
         {--stack= : Manually specify the frontend framework to target (e.g. 'vue3', 'react', 'svelte')}
+        {--ts-types : Whether to generate TypeScript types (if supported by the detected framework)}
+        {--interface : Whether to generate an interface for the resource (if supported by the detected framework)}
+        {--props= : Whether to include a props definition in the generated type or interface definition (if supported by the detected framework and if --ts-types or --interface is set)}
         {--force : Overwrite existing files without prompting}";
 
     protected $description = 'Generate an Inertia page/component based on the detected frontend framework';
@@ -43,20 +47,32 @@ class GenerateCommand extends Command
         $force = (bool) $this->option('force');
         $stack = $framework->profile->name;
         $type = $this->option('type') ?? 'component';
-
+        $has_ts_types = (bool) $this->option('ts-types');
+        $has_interface = (bool) $this->option('interface');
+        $props = $this->option('props');
         // generate the file using the appropriate stub based on the detected framework and provided type/name
         $this->generate(
-            $type,
-            $name,
-            $stack,
-            $force
+            type: $type,
+            name: $name,
+            stack: $stack,
+            force: $force,
+            has_ts_types: $has_ts_types,
+            has_interface: $has_interface,
+            props: $props
         );
 
         return Command::SUCCESS;
     }
 
-    protected function generate(string $type, string $name, string $stack, bool $force): void
+    protected function generate(string $type, string $name, string $stack, bool $force, bool $has_ts_types, bool $has_interface, ?string $props = null): void
     {
+        // only allow --props if either --ts-types or --interface option is set
+        // since props can only be generated if there is a type or interface
+        if ((isset($props) && is_string($props)) && ! ($has_ts_types || $has_interface) ) {
+            $this->components->error('The --props option requires either --ts-types or --interface to be set.');
+            return;
+        }
+
         // This is a placeholder method. You would implement the actual generation logic here,
         // such as determining the correct stub to use based on the profile, replacing placeholders in the stub with the provided name, and writing the file to the appropriate location.
         $this->info("Component generation logic would go here. (Type: {$type}, Profile: {$stack}, Name: {$name}, Force: " . ($force ? 'true' : 'false') . ")");
@@ -64,16 +80,52 @@ class GenerateCommand extends Command
         // get the correct stub based on the profile
         // replace placeholders in the stub with the provided name
         // write the file to the appropriate location, checking for existing files if $force is false
-
         $this->info("Attempting to retrieve stub for stack '{$stack}' and type '{$type}'...");
 
-        $stub = $this->get_stub_for_profile($stack, $type);
+        $stubContent = $this->get_stub_for_profile($stack, $type);
+        $stubContent = str_replace('{{ name }}', $name, $stubContent);
 
-        $stubContent = str_replace('{{ name }}', $name, $stub);
+        $parsedProps = [];
 
-        $stubReplacements = $this->get_placeholders_for_type($type);
-        foreach ($stubReplacements as $placeholder) {
-            $stubContent = $this->replace_placeholders($stubContent, $placeholder, $name);
+        if (is_string($props) && trim($props) !== '') {
+            $parsedProps = array_map(function(string $rawProp): array {
+                $parts = array_map('trim', explode(':', $rawProp, 2));
+
+                if ( count($parts) !== 2 || $parts[0] === '' || $parts[1] === '' ) {
+                    $this->components->error("Invalid prop definition: '{$rawProp}'. Each prop must be in the format 'propName: propType'.");
+                    return [];
+                }
+
+                return [
+                    'name' => $parts[0],
+                    'type' => $parts[1]
+                ];
+            }, array_filter(array_map('trim', explode(';', $props))));
+        }
+
+        // Build a comma-separated list of props for the component definition (e.g. "prop1, prop2, prop3")
+        $componentProps = implode(', ', array_column($parsedProps, 'name'));
+
+        // Build TS field lines
+        $typeProps = implode("\n", array_map(
+            fn(array $prop): string => " {$prop['name']}: {$prop['type']};",
+            $parsedProps
+        ));
+
+        if ( $typeProps === '') {
+            $typeProps = " // define your props here\n";
+        }
+
+        $stubContent = str_replace('{{ props }}', $componentProps, $stubContent);
+
+        if ($has_ts_types) {
+            $typeScriptTypeDefinition = "type {$name}Props = {\n{$typeProps}\n};";
+            $stubContent = str_replace('{{ typeDefinition }}', $typeScriptTypeDefinition, $stubContent);
+            $stubContent = str_replace('{{ TypeName }}', "{$name}Props", $stubContent);
+        } elseif ($has_interface) {
+            $interfaceDefinition = "interface {$name}Props {\n{$typeProps}\n}";
+            $stubContent = str_replace('{{ typeDefinition }}', $interfaceDefinition, $stubContent);
+            $stubContent = str_replace('{{ TypeName }}', "{$name}Props", $stubContent);
         }
 
         $this->info("Generated stub content:\n" . $stubContent);
@@ -99,10 +151,10 @@ class GenerateCommand extends Command
 
     protected function get_stub_for_profile(string $stack, string $type): string
     {
-        $stubContent = @file_get_contents(dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub"); // You would need to create these stub files in the appropriate directory structure within your package
+        $stubContent = file_get_contents(dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub"); // You would need to create these stub files in the appropriate directory structure within your package
 
         if (! $stubContent) {
-            $this->error("No stub found for framework '{$stack}' and type '{$type}'.");
+            $this->error("No template found for framework '{$stack}' and type '{$type}'.");
         }
 
         return $stubContent;
@@ -111,21 +163,30 @@ class GenerateCommand extends Command
     protected function get_placeholders_for_type(string $type): array
     {
         return match($type) {
-            'page' => [
+            'pages' => [
                 '{{ name }}',
+                '{{ TypeName }}',
+                '{{ TypeProps }}',
+                '{{ props }}'
             ],
-            'component' => [
+            'components' => [
                 '{{ name }}',
+                '{{ TypeName }}',
+                '{{ TypeProps }}',
+                '{{ props }}'
             ],
-            'layout' => [
+            'layouts' => [
                 '{{ name }}',
+                '{{ TypeName }}',
+                '{{ TypeProps }}',
+                '{{ props }}'
             ],
             default => []
         };
     }
 
-    protected function replace_placeholders(string $stubContent, string $placeholder, string $name): string
+    protected function applyTypeScriptTypes(string $stubContent, string $typeName, string $props): string
     {
-        return str_replace($placeholder, $name, $stubContent);
+
     }
 }

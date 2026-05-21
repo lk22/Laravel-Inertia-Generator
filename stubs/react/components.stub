@@ -1,10 +1,8 @@
 // Dependency imports goes here
 
-type ComponentProps = {
+{{ typeDefinition }}
 
-}
-
-export default function {{ name }}(): ComponentProps {
+export default function {{ name }}({ {{ props }} }: {{ TypeName }})  {
     return (
         <>
             Component: {{ name }}

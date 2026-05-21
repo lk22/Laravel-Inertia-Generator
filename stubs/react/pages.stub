@@ -1,4 +1,6 @@
-export default function {{ name }}() {
+{{ typeDefinition }}
+
+export default function {{ name }}({ {{ props }} }: {{ TypeName }}) {
     return (
         <>
             Page: {{ name }}

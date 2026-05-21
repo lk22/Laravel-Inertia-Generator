@@ -125,8 +125,8 @@ Notes:
 
 The package is in a good state for setup + generation, but these improvements are still recommended:
 
-1. Complete and harden generation naming logic so `--name` fully controls nested output paths.
-2. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
+1. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
+2. Adding logic to handle {folder}/{name} files
 3. Expand automated tests for generation command behavior across all stacks and all types.
 4. Add end-to-end command examples in README that match the exact generated file names in current implementation.
 5. Add optional video demo or GIF walkthrough of install + generate flow.
