@@ -184,9 +184,4 @@ class GenerateCommand extends Command
             default => []
         };
     }
-
-    protected function applyTypeScriptTypes(string $stubContent, string $typeName, string $props): string
-    {
-
-    }
 }
