@@ -1,4 +1,4 @@
-****# Laravel-Inertia-Generator
+# Laravel-Inertia-Generator
 
 Laravel Inertia Generator is a Laravel package for scaffolding new Inertia frontend resources in Laravel projects using React, Vue, or Svelte.
 
@@ -137,6 +137,7 @@ The package is in a good state for setup + generation, but these improvements ar
 
 1. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
 2. Adding logic to handle {folder}/{name} files
-3. Expand automated tests for generation command behavior across all stacks and all types.
-4. Add end-to-end command examples in README that match the exact generated file names in current implementation.
-5. Add optional video demo or GIF walkthrough of install + generate flow.
+3. Adding support for custom template stubs
+4. Expand automated tests for generation command behavior across all stacks and all types.
+5. Add end-to-end command examples in README that match the exact generated file names in current implementation.
+6. Add optional video demo or GIF walkthrough of install + generate flow.
