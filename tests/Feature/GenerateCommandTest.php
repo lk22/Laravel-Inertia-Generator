@@ -21,6 +21,11 @@ class GenerateCommandTest extends TestCase
             '--name' => 'TestPage',
             '--stack' => 'react',
         ]);
+
+        // Here you would add assertions to check that the expected files were created with the correct content
+        $expectedPath = base_path('resources/js/pages/TestPage.tsx');
+        $this->assertFileExists($expectedPath);
+        $this->assertStringContainsString('// Stub content for react page', file_get_contents($expectedPath));
     }
 
     private function writePackageJson(array $content): void

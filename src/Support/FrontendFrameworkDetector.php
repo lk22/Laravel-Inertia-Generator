@@ -57,11 +57,15 @@ class FrontendFrameworkDetector
 
     public function detectFromPackageJson(): ?DetectedFrontendFramework
     {
-        $detectedPackageJson = $this->packageJsonDetected();
+        if (! $this->packageJsonDetected()) {
+            return null;
+        }
+
         $decodedPackageJson = json_decode($this->files->get($this->getPackageJsonPath()), true);
 
-        if ( ! $detectedPackageJson ) { return null; }
-        if ( ! is_array($decodedPackageJson) ) { return null; }
+        if (! is_array($decodedPackageJson)) {
+            return null;
+        }
 
         $dependencies = array_keys(array_merge(
             $decodedPackageJson['dependencies'] ?? [],
@@ -156,17 +160,5 @@ class FrontendFrameworkDetector
     private function singularize(string $word): string
     {
         return rtrim($word, 's');
-    }
-
-    public static function detectFramework(?string $stack = null): ?DetectedFrontendFramework
-    {
-        $detector = app(self::class);
-        $detectedFramework = $detector->detectPackageDependency();
-        return $detector->detect($stack);
-    }
-
-    public function detectPackageDependency(): ?DetectedFrontendFramework
-    {
-        return $this->detectFromPackageJson();
     }
 }

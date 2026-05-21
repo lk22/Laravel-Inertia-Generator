@@ -22,9 +22,9 @@ class StubPublisher
         ];
 
         $targets = [
-            'page' => $directories['page'] . '/' . $this->outputDirectory . '/.' . $profile->extension('page'),
-            'component' => $directories['component'] . '/' . $this->outputDirectory . '/.' . $profile->extension('component'),
-            'layout' => $directories['layout'] . '/' . $this->outputDirectory . '/.' . $profile->extension('layout'),
+            'page' => $directories['page'] . '/' . $this->outputDirectory . '/StarterKitShowcase.' . $profile->extension('page'),
+            'component' => $directories['component'] . '/' . $this->outputDirectory . '/StarterKitPanel.' . $profile->extension('component'),
+            'layout' => $directories['layout'] . '/' . $this->outputDirectory . '/StarterKitLayout.' . $profile->extension('layout'),
         ];
 
         $replacements = [
@@ -47,7 +47,6 @@ class StubPublisher
             }
 
             $stubPath = $this->packagePath . '/stubs/' . $profile->stubSet . '/' . $type . '.stub';
-            $stubPath = base_path($stubPath);
             if (! $this->files->exists($stubPath)) {
                 throw new RuntimeException("Stub file not found for type '$type' at expected path: $stubPath");
             }
@@ -67,7 +66,7 @@ class StubPublisher
 
     public function resolveDirectory(array $candidates): string {
         foreach ( $candidates as $candidate ) {
-            if ($this->files->isDirectory($candidate)) {
+            if ($this->files->isDirectory($this->path($candidate))) {
                 return $candidate;
             }
         }

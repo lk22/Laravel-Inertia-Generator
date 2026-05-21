@@ -32,7 +32,7 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
             return new StubPublisher(
                 $app['files'],
                 $app->basePath(),
-                $app['config']->get('inertia-generator.stubs_path', 'inertia-extended'),
+                $app['config']->get('inertia-generator.output_directory', 'inertia-extended'),
                 dirname(__DIR__, 2)
             );
         });
@@ -41,7 +41,7 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
     public function boot() {
         $this->publishes([
             __DIR__.'/../../config/laravel-inertia-generator.php' => config_path('laravel-inertia-generator.php'),
-        ], 'config');
+        ], 'inertia-generator-config');
 
         if ($this->app->runningInConsole()) {
             $this->commands([

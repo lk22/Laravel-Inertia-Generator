@@ -2,7 +2,7 @@
 
 namespace Leoknudsen\LaravelInertiaGenerator\Support;
 
-use leoknudsen\LaravelInertiaGenerator\Support\FrameworkProfile;
+use Leoknudsen\LaravelInertiaGenerator\Support\FrameworkProfile;
 
 readonly class DetectedFrontendFramework
 {
