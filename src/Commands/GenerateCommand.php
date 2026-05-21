@@ -10,7 +10,7 @@ use Leoknudsen\LaravelInertiaGenerator\Support\FrontendFrameworkDetector;
 class GenerateCommand extends Command
 {
     protected $signature = "inertia:generate
-        {--type= : The type of artifact to generate (e.g. 'page' or 'component or layout')}
+        {--type= : The type of artifact to generate (e.g. 'pages' or 'components' or 'layouts')}
         {--name= : The name of the page/component to generate (e.g. 'Dashboard/Stats' or 'User/Profile')}
         {--stack= : Manually specify the frontend framework to target (e.g. 'vue3', 'react', 'svelte')}
         {--force : Overwrite existing files without prompting}";
@@ -65,8 +65,16 @@ class GenerateCommand extends Command
         // replace placeholders in the stub with the provided name
         // write the file to the appropriate location, checking for existing files if $force is false
 
+        $this->info("Attempting to retrieve stub for stack '{$stack}' and type '{$type}'...");
+
         $stub = $this->get_stub_for_profile($stack, $type);
-        $stubContent = str_replace('{{name}}', $name, $stub);
+
+        $stubContent = str_replace('{{ name }}', $name, $stub);
+
+        $stubReplacements = $this->get_placeholders_for_type($type);
+        foreach ($stubReplacements as $placeholder) {
+            $stubContent = $this->replace_placeholders($stubContent, $placeholder, $name);
+        }
 
         $this->info("Generated stub content:\n" . $stubContent);
 
@@ -77,7 +85,7 @@ class GenerateCommand extends Command
             default => 'txt'
         };
 
-        $filePath = base_path("resources/js/components/{$name}.{$extension}");
+        $filePath = base_path("resources/js/{$type}/{$name}.{$extension}");
 
         // throwing an error if the file already exists and --force is not set
         if (file_exists($filePath) && ! $force) {
@@ -91,12 +99,33 @@ class GenerateCommand extends Command
 
     protected function get_stub_for_profile(string $stack, string $type): string
     {
-        $stubContent = file_get_contents(base_path("stubs/{$stack}/{$type}.stub"));
+        $stubContent = @file_get_contents(dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub"); // You would need to create these stub files in the appropriate directory structure within your package
 
         if (! $stubContent) {
-            $this->error("No stub found for stack '{$stack}' and type '{$type}'.");
+            $this->error("No stub found for framework '{$stack}' and type '{$type}'.");
         }
 
         return $stubContent;
+    }
+
+    protected function get_placeholders_for_type(string $type): array
+    {
+        return match($type) {
+            'page' => [
+                '{{ name }}',
+            ],
+            'component' => [
+                '{{ name }}',
+            ],
+            'layout' => [
+                '{{ name }}',
+            ],
+            default => []
+        };
+    }
+
+    protected function replace_placeholders(string $stubContent, string $placeholder, string $name): string
+    {
+        return str_replace($placeholder, $name, $stubContent);
     }
 }

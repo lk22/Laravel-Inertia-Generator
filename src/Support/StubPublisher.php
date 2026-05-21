@@ -22,9 +22,9 @@ class StubPublisher
         ];
 
         $targets = [
-            'page' => $directories['page'] . '/' . $this->outputDirectory . '/StarterKitShowcase.' . $profile->extension('page'),
-            'component' => $directories['component'] . '/' . $this->outputDirectory . '/StarterKitPanel.' . $profile->extension('component'),
-            'layout' => $directories['layout'] . '/' . $this->outputDirectory . '/StarterKitLayout.' . $profile->extension('layout'),
+            'page' => $directories['page'] . '/' . $this->outputDirectory . '/page.' . $profile->extension('page'),
+            'component' => $directories['component'] . '/' . $this->outputDirectory . '/component.' . $profile->extension('component'),
+            'layout' => $directories['layout'] . '/' . $this->outputDirectory . '/layout.' . $profile->extension('layout'),
         ];
 
         $replacements = [
@@ -73,6 +73,7 @@ class StubPublisher
 
         return $candidates[0];
     }
+
     public function path(string $relativePath): string {
         return $this->basePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
     }

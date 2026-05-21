@@ -1,0 +1,13 @@
+// Dependency imports goes here
+
+type ComponentProps = {
+
+}
+
+export default function {{ name }}(): ComponentProps {
+    return (
+        <>
+            Component: {{ name }}
+        </>
+    );
+}

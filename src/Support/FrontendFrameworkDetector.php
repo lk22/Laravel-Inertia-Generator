@@ -53,8 +53,6 @@ class FrontendFrameworkDetector
         throw CouldNotDetectFrameworkException::nothingDetected();
     }
 
-
-
     public function detectFromPackageJson(): ?DetectedFrontendFramework
     {
         if (! $this->packageJsonDetected()) {

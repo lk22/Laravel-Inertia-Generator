@@ -48,7 +48,7 @@ class InstallCommand extends Command
 
     private function validateStack(string $stack): void
     {
-        $validStacks = array_keys(config('inertia-generator.frameworks', []));
+        $validStacks = ['vue', 'react', 'svelte'];
 
         if (!in_array($stack, $validStacks, true)) {
             throw new InvalidArgumentException("Invalid stack specified: {$stack}. Valid options are: " . implode(', ', $validStacks));
