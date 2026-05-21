@@ -62,6 +62,8 @@ php artisan inertia-generator:install --stack=vue
 php artisan inertia-generator:install --stack=svelte
 ```
 
+Its recommended to use the stack that follows with your starter kit
+
 ### 2. Detect the current frontend framework (optional)
 
 ```bash
