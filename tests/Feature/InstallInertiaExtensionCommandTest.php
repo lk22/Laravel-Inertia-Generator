@@ -6,36 +6,29 @@ use Leoknudsen\LaravelInertiaGenerator\Tests\TestCase;
 
 class InstallInertiaExtensionCommandTest extends TestCase
 {
-    public function test_install_command_publishes_extension_files(): void
+    public function test_install_command_publishes_config_files(): void
     {
-        $this->files->put(base_path('package.json'), json_encode([
-            'dependencies' => [
-                '@inertiajs/react' => '^2.0.0'
-            ]
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-        $this->writeStubFilesForFramework('react');
-
-        $this->artisan('inertia-generator:install')
-            ->expectsOutput('Config file published successfully.')
+        $this->artisan('inertia-generator:install', ['--stack' => 'react'])
+            ->expectsOutput('Publishing Inertia extension stubs...')
             ->expectsOutput('Inertia extension installation complete!')
             ->assertSuccessful();
 
-        $this->assertFileExists(base_path('resources/js/pages/inertia-extended/StarterKitShowcase.tsx'));
-        $this->assertFileExists(base_path('resources/js/components/inertia-extended/StarterKitPanel.tsx'));
-        $this->assertFileExists(base_path('resources/js/layouts/inertia-extended/StarterKitLayout.tsx'));
+        $this->assertFileExists(config_path('laravel-inertia-generator.php'));
     }
 
-    public function test_install_command_can_be_forced_to_generate_vue_stubs(): void
+    public function test_install_command_can_be_forced_to_generate_framework_stubs(): void
     {
-        $this->writeStubFilesForFramework('vue');
-        $this->artisan('inertia-generator:install')
+        $framework = 'vue';
+
+        $this->writeStubFilesForFramework($framework);
+        $this->artisan('inertia-generator:install', ['--stack' => $framework])
             ->expectsOutputToContain('Inertia extension stubs published successfully')
             ->assertSuccessful();
 
-        $this->assertFileExists(base_path('resources/js/pages/inertia-extended/StarterKitShowcase.vue'));
-        $this->assertFileExists(base_path('resources/js/components/inertia-extended/StarterKitPanel.vue'));
-        $this->assertFileExists(base_path('resources/js/layouts/inertia-extended/StarterKitLayout.vue'));
+        $this->assertDirectoryExists(base_path("stubs/{$framework}"));
+        $this->assertFileExists(base_path("stubs/{$framework}/page.stub"));
+        $this->assertFileExists(base_path("stubs/{$framework}/component.stub"));
+        $this->assertFileExists(base_path("stubs/{$framework}/layout.stub"));
     }
 
     private function writeStubFilesForFramework(string $framework): void

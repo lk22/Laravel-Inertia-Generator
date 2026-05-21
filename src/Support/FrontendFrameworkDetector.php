@@ -53,6 +53,8 @@ class FrontendFrameworkDetector
         throw CouldNotDetectFrameworkException::nothingDetected();
     }
 
+
+
     public function detectFromPackageJson(): ?DetectedFrontendFramework
     {
         $detectedPackageJson = $this->packageJsonDetected();
@@ -154,5 +156,17 @@ class FrontendFrameworkDetector
     private function singularize(string $word): string
     {
         return rtrim($word, 's');
+    }
+
+    public static function detectFramework(?string $stack = null): ?DetectedFrontendFramework
+    {
+        $detector = app(self::class);
+        $detectedFramework = $detector->detectPackageDependency();
+        return $detector->detect($stack);
+    }
+
+    public function detectPackageDependency(): ?DetectedFrontendFramework
+    {
+        return $this->detectFromPackageJson();
     }
 }

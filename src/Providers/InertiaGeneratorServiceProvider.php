@@ -1,11 +1,12 @@
 <?php
 
-namespace LeoKnudsen\LaravelInertiaGenerator\Providers;
+namespace Leoknudsen\LaravelInertiaGenerator\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
 use Leoknudsen\LaravelInertiaGenerator\Commands\InstallCommand;
 use Leoknudsen\LaravelInertiaGenerator\Commands\GenerateCommand;
+use Leoknudsen\LaravelInertiaGenerator\Commands\DetectFrameworkCommand;
 use Leoknudsen\LaravelInertiaGenerator\Support\FrameworkProfileRepository as FrameworkProfile;
 use Leoknudsen\LaravelInertiaGenerator\Support\FrontendFrameworkDetector;
 use Leoknudsen\LaravelInertiaGenerator\Support\StubPublisher;
@@ -15,10 +16,8 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
     public function register() {
         $this->mergeConfigFrom(__DIR__.'/../../config/laravel-inertia-generator.php', 'inertia-generator');
 
-        $this->app->singleton(FrameworkProfile::class, function ($app) {
-            return new FrameworkProfile(
-                $app['config']->get('inertia-generator.frameworks', [])
-            );
+        $this->app->singleton(FrameworkProfile::class, function () {
+            return new FrameworkProfile();
         });
 
         $this->app->singleton(FrontendFrameworkDetector::class, function ($app) {
@@ -33,11 +32,12 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
             return new StubPublisher(
                 $app['files'],
                 $app->basePath(),
-                $app['config']->get('inertia-generator.stubs_path', __DIR__.'/../../stubs'),
-                $app['config']->get('inertia-generator.output_directory', 'inertia-extended')
+                $app['config']->get('inertia-generator.stubs_path', 'inertia-extended'),
+                dirname(__DIR__, 2)
             );
         });
     }
+
     public function boot() {
         $this->publishes([
             __DIR__.'/../../config/laravel-inertia-generator.php' => config_path('laravel-inertia-generator.php'),
@@ -46,7 +46,8 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
-                GenerateCommand::class
+                GenerateCommand::class,
+                DetectFrameworkCommand::class,
             ]);
         }
     }
