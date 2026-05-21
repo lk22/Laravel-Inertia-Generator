@@ -2,6 +2,7 @@
 
 Laravel Inertia Generator is a Laravel package for scaffolding new Inertia frontend resources in Laravel projects using React, Vue, or Svelte.
 
+
 The package separates setup from generation:
 
 - Install commands handle package setup and framework detection.
@@ -98,3 +99,32 @@ Generate for a specific stack:
 ```bash
 php artisan inertia:generate --type=page --name=Reports/Index --stack=vue
 ```
+
+## current state
+Current state for this package is currently in development, if you think this is a interesting package and maybe want to contribute in anyway, let me know :)
+
+## Resource Type Mapping
+
+When you generate a resource, the package picks a stub based on your stack and type, then writes the file to the matching frontend directory.
+
+| Type | Stub file (by stack) | Output base path candidates | Example output (default output_directory: `inertia`) |
+| --- | --- | --- | --- |
+| `page` | `stubs/<stack>/page.stub` | `resources/js/pages` or `resources/js/Pages` | `resources/js/pages/inertia/StarterKitShowcase.<ext>` |
+| `component` | `stubs/<stack>/component.stub` | `resources/js/components` or `resources/js/Components` | `resources/js/components/inertia/StarterKitPanel.<ext>` |
+| `layout` | `stubs/<stack>/layout.stub` | `resources/js/layouts` or `resources/js/Layouts` | `resources/js/layouts/inertia/StarterKitLayout.<ext>` |
+
+Notes:
+
+- `<stack>` is one of `react`, `vue`, or `svelte`.
+- `<ext>` comes from your stack configuration (`tsx`, `vue`, `svelte`).
+- Output subdirectory comes from `output_directory` in [config/laravel-inertia-generator.php](config/laravel-inertia-generator.php).
+
+## What's Remaining
+
+The package is in a good state for setup + generation, but these improvements are still recommended:
+
+1. Complete and harden generation naming logic so `--name` fully controls nested output paths.
+2. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
+3. Expand automated tests for generation command behavior across all stacks and all types.
+4. Add end-to-end command examples in README that match the exact generated file names in current implementation.
+5. Add optional video demo or GIF walkthrough of install + generate flow.
