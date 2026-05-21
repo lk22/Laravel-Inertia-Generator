@@ -1,4 +1,4 @@
-# Laravel-Inertia-Generator
+****# Laravel-Inertia-Generator
 
 Laravel Inertia Generator is a Laravel package for scaffolding new Inertia frontend resources in Laravel projects using React, Vue, or Svelte.
 
@@ -102,8 +102,18 @@ Generate for a specific stack:
 php artisan inertia:generate --type=page --name=Reports/Index --stack=vue
 ```
 
+Generate with type or interface and prop definitions
+
+```bash
+php artisan inertia:generate --type=page --name=ReportComponent --ts-types --props='prop1:string;prop2:number'
+php artisan inertia:generate --type=page --name=ReportComponent --interface --props='prop1:string;prop2:number'
+```
+
 ## current state
 Current state for this package is currently in development, if you think this is a interesting package and maybe want to contribute in anyway, let me know :)
+
+## newest feature
+Adding support for TypeScript Types and interface definitions for the component resource (Page, Component, Layout)
 
 ## Resource Type Mapping
 
