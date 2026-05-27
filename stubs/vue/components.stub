@@ -1,0 +1,21 @@
+<script lang="ts">
+    import { defineProps } from '@inertiajs/vue3'
+
+    {{ typeDefinition }}
+
+    defineProps<{{ TypeName }}>({
+        {{ TypeProps }}
+    })
+</script>
+
+<template>
+    <div id="component-{{ name }}">
+        Component: {{ name }}
+    </div>
+</template>
+
+<style>
+    #component-{{ name }} {
+        /* Component styles goes here */
+    }
+</style>

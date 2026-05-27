@@ -1,0 +1,24 @@
+<script lang="ts">
+    import { Head, defineProps } from '@inertiajs/vue3'
+
+    {{ typeDefinition }}
+
+    defineProps<{{ TypeName }}>({
+        {{ TypeProps }}
+    })
+</script>
+
+<template>
+    <div id="{{ name }}">
+        Page: {{ name }}
+    </div>
+</template>
+
+<style>
+    <Layout>
+        <Head title="{{ name }}">
+        #{{ name }} {
+            /* component styles goes here */
+        }
+    </Layout>
+</style>

@@ -108,7 +108,12 @@ class GenerateCommand extends Command
 
         // Build TS field lines
         $typeProps = implode("\n", array_map(
-            fn(array $prop): string => " {$prop['name']}: {$prop['type']};",
+            fn(array $prop): string => "{$prop['name']}: {$prop['type']};",
+            $parsedProps
+        ));
+
+        $vueTypeProps = implode("\n", array_map(
+            fn(array $prop): string => " {$prop['name']}: '',",
             $parsedProps
         ));
 
@@ -117,6 +122,7 @@ class GenerateCommand extends Command
         }
 
         $stubContent = str_replace('{{ props }}', $componentProps, $stubContent);
+        $stubContent = str_replace('{{ TypeProps }}', "$vueTypeProps", $stubContent);
 
         if ($has_ts_types) {
             $typeScriptTypeDefinition = "type {$name}Props = {\n{$typeProps}\n};";
@@ -132,7 +138,7 @@ class GenerateCommand extends Command
 
         $extension = match($stack) {
             'react' => 'tsx',
-            'vue3' => 'vue',
+            'vue' => 'vue',
             'svelte' => 'svelte',
             default => 'txt'
         };
