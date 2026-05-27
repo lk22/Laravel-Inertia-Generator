@@ -113,7 +113,10 @@ php artisan inertia:generate --type=page --name=ReportComponent --interface --pr
 Current state for this package is currently in development, if you think this is a interesting package and maybe want to contribute in anyway, let me know :)
 
 ## newest feature
-Adding support for Vue3 components, layouts and pages.
+Adding support for Generation components or pages and layouts in sub folders with {Folder}/{Name} using --name options
+```bash
+php artisan inertia:generate --type=pages --name=Reports/Index
+```
 
 ## Resource Type Mapping
 
@@ -137,8 +140,7 @@ The package is in a good state for setup + generation, but these improvements ar
 
 1. Adding support for svelte components, pages, layouts.
 2. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
-3. Adding logic to handle {folder}/{name} files
-4. Adding support for custom template stubs
-5. Expand automated tests for generation command behavior across all stacks and all types.
-6. Add end-to-end command examples in README that match the exact generated file names in current implementation.
-7. Add optional video demo or GIF walkthrough of install + generate flow.
+3. Adding support for custom template stubs
+4. Expand automated tests for generation command behavior across all stacks and all types.
+5. Add end-to-end command examples in README that match the exact generated file names in current implementation.
+6. Add optional video demo or GIF walkthrough of install + generate flow.

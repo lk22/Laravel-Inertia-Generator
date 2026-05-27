@@ -15,10 +15,7 @@
 </template>
 
 <style>
-    <Layout>
-        <Head title="{{ name }}">
-        #{{ name }} {
-            /* component styles goes here */
-        }
-    </Layout>
+    #page-{{ name }} {
+        /* component styles goes here */
+    }
 </style>

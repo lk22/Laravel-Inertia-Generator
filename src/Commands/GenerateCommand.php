@@ -66,11 +66,24 @@ class GenerateCommand extends Command
 
     protected function generate(string $type, string $name, string $stack, bool $force, bool $has_ts_types, bool $has_interface, ?string $props = null): void
     {
+
         // only allow --props if either --ts-types or --interface option is set
         // since props can only be generated if there is a type or interface
         if ((isset($props) && is_string($props)) && ! ($has_ts_types || $has_interface) ) {
             $this->components->error('The --props option requires either --ts-types or --interface to be set.');
             return;
+        }
+
+        $folder = "";
+        if ( str_contains($name, '/') ) {
+            $parts = explode('/', $name);
+            $name = array_pop($parts);
+            $folder = implode('/', $parts) . '/';
+
+            // nake sure the folder exists
+            if (! file_exists(base_path("resources/js/{$type}/{$folder}")) ) {
+                mkdir(base_path("resources/js/{$type}/{$folder}"), 0755, true);
+            }
         }
 
         // This is a placeholder method. You would implement the actual generation logic here,
@@ -143,7 +156,9 @@ class GenerateCommand extends Command
             default => 'txt'
         };
 
-        $filePath = base_path("resources/js/{$type}/{$name}.{$extension}");
+        $filePath = ($folder !== '')
+            ? base_path("resources/js/{$type}/{$folder}{$name}.{$extension}")
+            : base_path("resources/js/{$type}/{$name}.{$extension}");
 
         // throwing an error if the file already exists and --force is not set
         if (file_exists($filePath) && ! $force) {
