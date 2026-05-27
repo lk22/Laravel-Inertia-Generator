@@ -1,0 +1,19 @@
+<script module lang="ts">
+    import type { Snippet } from 'svelte';
+    import AppLayout from '@/layouts/app/AppSidebarLayout.svelte';
+    import type { BreadcrumbItem } from '@/types';
+</script>
+
+<script lang="ts">
+    // perform imports here
+
+    {{ typeDefinition }}
+
+    let {
+        {{ TypeProps }}
+    }: {{ TypeName }} = $props;
+</script>
+
+<div>
+    Layout: {{ name }}
+</div>

@@ -97,6 +97,7 @@ class StubPublisher
 
         return str_starts_with($relativePath, '.') ? $relativePath : './' . $relativePath;
     }
+
     public function segments(string $path): array {
         return array_values(array_filter(explode('/', trim(str_replace('\\', '/', $path), '/'))));
     }

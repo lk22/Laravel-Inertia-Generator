@@ -1,0 +1,17 @@
+<script module lang="ts">
+    export const layout = {}
+</script>
+
+<script lang="ts">
+    // perform imports here
+
+    {{ typeDefinition }}
+
+    let {
+        {{ TypeProps }}
+    }: {{ TypeName }} = $props;
+</script>
+
+<div>
+    Component: {{ name }}
+</div>

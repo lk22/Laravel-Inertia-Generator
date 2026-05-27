@@ -24,13 +24,19 @@ class GenerateCommand extends Command
     protected string $stack;
     protected bool $force;
 
+    /**
+     * Command handler
+     *
+     * @param FrontendFrameworkDetector $detector
+     * @return int
+     */
     public function handle(FrontendFrameworkDetector $detector): int
     {
         try {
             $framework = $this->option('stack') !== null && $this->option('stack') !== ''
                 ? $detector->detect($this->option('stack'))
                 : $detector->detect();
-        } catch (CouldNotDetectFrameworkException $e) {
+        } catch (CouldNotDetectFrameworkException|InvalidArgumentException $e) {
             $this->components->error($e->getMessage());
             return self::FAILURE;
         }
@@ -64,9 +70,20 @@ class GenerateCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * Generator handler for specific type
+     *
+     * @param string $type the specific type of artifact to generate (e.g. 'page', 'component', 'layout')
+     * @param string $name the name of the artiface to generate (e.g. 'Dashboard/Stats' or 'User/Profile')
+     * @param string $stack the frontend framework stack to target (e.g. 'vue3', 'react', 'svelte')
+     * @param bool $force whether to overwrite existing files without prompting
+     * @param bool $has_ts_types whether to generate TypeScript types (if supported by the detected framework)
+     * @param bool $has_interface whether to generate an interface for the resource (if supported by the detected framework)
+     * @param mixed $props a semicolon-separated list of props to include in the generated type or interface definition, in the format "propName: propType; anotherProp: anotherType" (only applicable if --ts-types or --interface is set)
+     * @return void
+     */
     protected function generate(string $type, string $name, string $stack, bool $force, bool $has_ts_types, bool $has_interface, ?string $props = null): void
     {
-
         // only allow --props if either --ts-types or --interface option is set
         // since props can only be generated if there is a type or interface
         if ((isset($props) && is_string($props)) && ! ($has_ts_types || $has_interface) ) {
@@ -170,6 +187,13 @@ class GenerateCommand extends Command
         $this->info("File generated at: {$filePath}");
     }
 
+    /**
+     * Fetchigg a specific stub for a profile (React, Vue, Svelte)
+     *
+     * @param string $stack
+     * @param string $type
+     * @return bool|string
+     */
     protected function get_stub_for_profile(string $stack, string $type): string
     {
         $stubContent = file_get_contents(dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub"); // You would need to create these stub files in the appropriate directory structure within your package
@@ -181,6 +205,12 @@ class GenerateCommand extends Command
         return $stubContent;
     }
 
+    /**
+     * Getting placeholders for a spcificic type
+     *
+     * @param string $type
+     * @return string[] | array
+     */
     protected function get_placeholders_for_type(string $type): array
     {
         return match($type) {
