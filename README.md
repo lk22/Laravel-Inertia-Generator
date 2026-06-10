@@ -75,48 +75,62 @@ php artisan inertia:detect-framework
 Generate a page:
 
 ```bash
-php artisan inertia:generate --type=page --name=Dashboard
+php artisan inertia:generate --type=pages --name=Dashboard
 ```
 
 Generate a component:
 
 ```bash
-php artisan inertia:generate --type=component --name=User/ProfileCard
+php artisan inertia:generate --type=components --name=User/ProfileCard
 ```
 
 Generate a layout:
 
 ```bash
-php artisan inertia:generate --type=layout --name=AppLayout
+php artisan inertia:generate --type=layouts --name=AppLayout
 ```
 
 Force overwrite an existing generated file:
 
 ```bash
-php artisan inertia:generate --type=component --name=User/ProfileCard --force
+php artisan inertia:generate --type=components --name=User/ProfileCard --force
 ```
 
 Generate for a specific stack:
 
 ```bash
-php artisan inertia:generate --type=page --name=Reports/Index --stack=vue
+php artisan inertia:generate --type=pages --name=Reports/Index --stack=vue
 ```
 
 Generate with type or interface and prop definitions
 
 ```bash
-php artisan inertia:generate --type=page --name=ReportComponent --ts-types --props='prop1:string;prop2:number'
-php artisan inertia:generate --type=page --name=ReportComponent --interface --props='prop1:string;prop2:number'
+php artisan inertia:generate --type=pages --name=ReportComponent --ts-types --props='prop1:string;prop2:number'
+php artisan inertia:generate --type=pages --name=ReportComponent --interface --props='prop1:string;prop2:number'
 ```
 
 ## current state
 Current state for this package is currently in development, if you think this is a interesting package and maybe want to contribute in anyway, let me know :)
 
 ## newest feature
-Adding support for Generation components or pages and layouts in sub folders with {Folder}/{Name} using --name options
-```bash
-php artisan inertia:generate --type=pages --name=Reports/Index
+Added  support for using custom stubs generatable from own custom path
+This feature takes all default stubs and copy them to your own path, so you have a opportunity to refactor them as needed
+To do this, u need to define your new path for the stubs in the configuration file "laravel-inertia-generator.php"
+in the "custom_stubs_path" like this
+
+```php
+    return [
+    'output_directory' => 'inertia', // Directory where generated files will be placed
+    'default_framework' => 'react', // Set to 'react', 'vue', or 'svelte' to skip detection and default to a specific framework
+    'custom_stubs_path' => base_path('stubs'),
 ```
+
+Next step - run the publish command to copy the defaul stub files into the configured path
+```bash
+    php artisan inertia:stubs:publish
+```
+this command will first of all detect which framework you are using (React, Vue, Svelte)
+and then take the stubs used for the installed framwork
 
 ## Resource Type Mapping
 
@@ -138,9 +152,7 @@ Notes:
 
 The package is in a good state for setup + generation, but these improvements are still recommended:
 
-1. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
-2. Adding support for custom template stubs
-3. Expand automated tests for generation command behavior across all stacks and all types.
-4. Adding support for adding tests for each generated page, component or layout files
-5. Add end-to-end command examples in README that match the exact generated file names in current implementation.
-6. Add optional video demo or GIF walkthrough of install + generate flow.
+1. Adding support for adding tests for each generated page, component or layout files
+2. Expand automated tests for generation command behavior across all stacks and all types.
+4. Add end-to-end command examples in README that match the exact generated file names in current implementation.
+5. Add optional video demo or GIF walkthrough of install + generate flow.

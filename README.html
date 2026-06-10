@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Laravel-Inertia-Generator</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension bierner.markdown-checkbox */
+.contains-task-list {
+    padding-left: 0;
+}
+
+.contains-task-list li {
+    margin-left: 24px;
+}
+
+.contains-task-list .task-list-item {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.contains-task-list .contains-task-list {
+    padding-left: 20px;
+} 
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="laravel-inertia-generator">Laravel-Inertia-Generator</h1>
+<p>Laravel Inertia Generator is a Laravel package for scaffolding new Inertia frontend resources in Laravel projects using React, Vue, or Svelte.</p>
+<p>The package separates setup from generation:</p>
+<ul>
+<li>Install commands handle package setup and framework detection.</li>
+<li>Generate commands create new frontend artifacts from framework-specific stubs.</li>
+</ul>
+<p>This means pages, components, and layouts are generated on dedicated generate commands, not during install.</p>
+<h2 id="what-you-can-generate">What You Can Generate</h2>
+<ul>
+<li>New Inertia pages</li>
+<li>Reusable frontend components</li>
+<li>Layout components</li>
+<li>Framework-specific output files with the right extension (<code>.tsx</code>, <code>.vue</code>, <code>.svelte</code>)</li>
+<li>Generated resources based on your selected or detected frontend stack</li>
+</ul>
+<h2 id="why-use-it">Why Use It</h2>
+<ul>
+<li>Speeds up frontend scaffolding for Inertia projects</li>
+<li>Keeps page/component/layout structure consistent</li>
+<li>Reduces repetitive manual boilerplate</li>
+<li>Supports both automatic framework detection and explicit stack selection</li>
+</ul>
+<h2 id="typical-workflow">Typical Workflow</h2>
+<ol>
+<li>Run install/setup to publish package configuration and prepare the package in your app.</li>
+<li>Run generation commands when you need new resources.</li>
+<li>Choose what to generate (page/component/layout) and the target name.</li>
+<li>Let the package generate files from the correct framework stubs.</li>
+</ol>
+<p>In short: install prepares the package, generate commands create the actual frontend resources.</p>
+<h2 id="what-it-does-visual">What It Does (Visual)</h2>
+<p><img src="file:////Users/leoknudsen/code/laravel-projects/laravel-inertia-generator/docs/assets/what-it-does.svg" alt="Laravel Inertia Generator workflow"></p>
+<p>The package workflow is simple:</p>
+<ul>
+<li>Setup once with the install command</li>
+<li>Generate pages, components, and layouts with dedicated generate commands</li>
+<li>Get framework-specific output files for React, Vue, or Svelte</li>
+</ul>
+<h2 id="how-to">How To</h2>
+<h3 id="1-install-and-prepare-the-package">1. Install and prepare the package</h3>
+<p>Run the install command to publish package configuration and initialize setup:</p>
+<pre><code class="language-bash">php artisan inertia-generator:install
+</code></pre>
+<p>If you want to explicitly target a frontend stack:</p>
+<pre><code class="language-bash">php artisan inertia-generator:install --stack=react
+php artisan inertia-generator:install --stack=vue
+php artisan inertia-generator:install --stack=svelte
+</code></pre>
+<p>Its recommended to use the stack that follows with your starter kit</p>
+<h3 id="2-detect-the-current-frontend-framework-optional">2. Detect the current frontend framework (optional)</h3>
+<pre><code class="language-bash">php artisan inertia:detect-framework
+</code></pre>
+<h3 id="3-generate-new-resources">3. Generate new resources</h3>
+<p>Generate a page:</p>
+<pre><code class="language-bash">php artisan inertia:generate --<span class="hljs-built_in">type</span>=pages --name=Dashboard
+</code></pre>
+<p>Generate a component:</p>
+<pre><code class="language-bash">php artisan inertia:generate --<span class="hljs-built_in">type</span>=components --name=User/ProfileCard
+</code></pre>
+<p>Generate a layout:</p>
+<pre><code class="language-bash">php artisan inertia:generate --<span class="hljs-built_in">type</span>=layouts --name=AppLayout
+</code></pre>
+<p>Force overwrite an existing generated file:</p>
+<pre><code class="language-bash">php artisan inertia:generate --<span class="hljs-built_in">type</span>=components --name=User/ProfileCard --force
+</code></pre>
+<p>Generate for a specific stack:</p>
+<pre><code class="language-bash">php artisan inertia:generate --<span class="hljs-built_in">type</span>=pages --name=Reports/Index --stack=vue
+</code></pre>
+<p>Generate with type or interface and prop definitions</p>
+<pre><code class="language-bash">php artisan inertia:generate --<span class="hljs-built_in">type</span>=pages --name=ReportComponent --ts-types --props=<span class="hljs-string">&#x27;prop1:string;prop2:number&#x27;</span>
+php artisan inertia:generate --<span class="hljs-built_in">type</span>=pages --name=ReportComponent --interface --props=<span class="hljs-string">&#x27;prop1:string;prop2:number&#x27;</span>
+</code></pre>
+<h2 id="current-state">current state</h2>
+<p>Current state for this package is currently in development, if you think this is a interesting package and maybe want to contribute in anyway, let me know 😃</p>
+<h2 id="newest-feature">newest feature</h2>
+<p>Added  support for using custom stubs generatable from own custom path
+This feature takes all default stubs and copy them to your own path, so you have a opportunity to refactor them as needed
+To do this, u need to define your new path for the stubs in the configuration file &quot;laravel-inertia-generator.php&quot;
+in the &quot;custom_stubs_path&quot; like this</p>
+<pre><code class="language-php">    <span class="hljs-keyword">return</span> [
+    <span class="hljs-string">&#x27;output_directory&#x27;</span> =&gt; <span class="hljs-string">&#x27;inertia&#x27;</span>, <span class="hljs-comment">// Directory where generated files will be placed</span>
+    <span class="hljs-string">&#x27;default_framework&#x27;</span> =&gt; <span class="hljs-string">&#x27;react&#x27;</span>, <span class="hljs-comment">// Set to &#x27;react&#x27;, &#x27;vue&#x27;, or &#x27;svelte&#x27; to skip detection and default to a specific framework</span>
+    <span class="hljs-string">&#x27;custom_stubs_path&#x27;</span> =&gt; <span class="hljs-title function_ invoke__">base_path</span>(<span class="hljs-string">&#x27;stubs&#x27;</span>),
+</code></pre>
+<p>Next step - run the publish command to copy the defaul stub files into the configured path</p>
+<pre><code class="language-bash">    php artisan inertia:stubs:publish
+</code></pre>
+<p>this command will first of all detect which framework you are using (React, Vue, Svelte)
+and then take the stubs used for the installed framwork</p>
+<h2 id="resource-type-mapping">Resource Type Mapping</h2>
+<p>When you generate a resource, the package picks a stub based on your stack and type, then writes the file to the matching frontend directory.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Stub file (by stack)</th>
+<th>Output base path candidates</th>
+<th>Example output (default output_directory: <code>inertia</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>page</code></td>
+<td><code>stubs/&lt;stack&gt;/page.stub</code></td>
+<td><code>resources/js/pages</code> or <code>resources/js/Pages</code></td>
+<td><code>resources/js/pages/inertia/StarterKitShowcase.&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td><code>component</code></td>
+<td><code>stubs/&lt;stack&gt;/component.stub</code></td>
+<td><code>resources/js/components</code> or <code>resources/js/Components</code></td>
+<td><code>resources/js/components/inertia/StarterKitPanel.&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td><code>layout</code></td>
+<td><code>stubs/&lt;stack&gt;/layout.stub</code></td>
+<td><code>resources/js/layouts</code> or <code>resources/js/Layouts</code></td>
+<td><code>resources/js/layouts/inertia/StarterKitLayout.&lt;ext&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul>
+<li><code>&lt;stack&gt;</code> is one of <code>react</code>, <code>vue</code>, or <code>svelte</code>.</li>
+<li><code>&lt;ext&gt;</code> comes from your stack configuration (<code>tsx</code>, <code>vue</code>, <code>svelte</code>).</li>
+<li>Output subdirectory comes from <code>output_directory</code> in <a href="config/laravel-inertia-generator.php">config/laravel-inertia-generator.php</a>.</li>
+</ul>
+<h2 id="whats-remaining">What's Remaining</h2>
+<p>The package is in a good state for setup + generation, but these improvements are still recommended:</p>
+<ol>
+<li>Adding support for adding tests for each generated page, component or layout files</li>
+<li>Expand automated tests for generation command behavior across all stacks and all types.</li>
+<li>Add end-to-end command examples in README that match the exact generated file names in current implementation.</li>
+<li>Add optional video demo or GIF walkthrough of install + generate flow.</li>
+</ol>
+
+            
+            
+        </body>
+        </html>

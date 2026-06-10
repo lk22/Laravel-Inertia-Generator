@@ -64,6 +64,33 @@ class StubPublisher
         return array_values($targets);
     }
 
+    public function publishToCustomPath(string $customPath, bool $force = false, FrameworkProfile $profile): array {
+
+        $sourcePath = $this->packagePath . '/stubs/' . '/' . $profile->stubSet . '/';
+        $allFiles = $this->files->allFiles($sourcePath);
+
+        foreach ($allFiles as $file) {
+            $relativePath = str_replace($sourcePath, '', $file->getPathname());
+            $targetPath = $this->path($customPath . '/' . $relativePath);
+
+            if ( ! $force && $this->files->exists($targetPath) ) {
+                throw new RuntimeException("File already exists at $targetPath. Use --force to overwrite.");
+            }
+
+            $targetDirectory = dirname($targetPath);
+            if ( ! $this->files->isDirectory($targetDirectory) ) {
+                $this->files->makeDirectory($targetDirectory, 0755, true);
+            }
+
+            $this->files->put(
+                $targetPath,
+                $this->files->get($file->getPathname())
+            );
+        }
+
+        return array_map(fn($file) => $customPath . '/' . str_replace($sourcePath, '', $file->getPathname()), $allFiles);
+    }
+
     public function resolveDirectory(array $candidates): string {
         foreach ( $candidates as $candidate ) {
             if ($this->files->isDirectory($this->path($candidate))) {

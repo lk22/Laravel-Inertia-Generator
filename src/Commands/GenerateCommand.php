@@ -129,7 +129,7 @@ class GenerateCommand extends Command
         // get the correct stub based on the profile
         // replace placeholders in the stub with the provided name
         // write the file to the appropriate location, checking for existing files if $force is false
-        $this->info("Attempting to retrieve stub for stack '{$stack}' and type '{$type}'...");
+        $this->info("Attempting to retrieve stub for stack '{$stack}' and type '{$type}'...\n");
 
         $stubContent = $this->get_stub_for_profile($stack, $type);
         $stubContent = str_replace('{{ name }}', $name, $stubContent);
@@ -216,13 +216,22 @@ class GenerateCommand extends Command
      */
     protected function get_stub_for_profile(string $stack, string $type): string
     {
-        $stubContent = file_get_contents(dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub"); // You would need to create these stub files in the appropriate directory structure within your package
+        $stubContent = '';
 
-        if (! $stubContent) {
-            $this->error("No template found for framework '{$stack}' and type '{$type}'.");
-        }
+        $stubPath = config('laravel-inertia-generator.custom_stubs_path')
+            ? config('laravel-inertia-generator.custom_stubs_path') . "/{$type}.stub"
+            : dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub";
 
-        return $stubContent;
+        $stubContent = file_get_contents($stubPath);
+
+         if (! $stubContent) {
+            $this->error("No template found for framework '{$stack}' and type '{$type}' at expected path: {$stubPath}.");
+            return '';
+         }
+
+         $this->info("Successfully retrieved stub content for stack '{$stack}' and type '{$type}' from path: {$stubPath}.\n");
+
+         return $stubContent;
     }
 
     /**
