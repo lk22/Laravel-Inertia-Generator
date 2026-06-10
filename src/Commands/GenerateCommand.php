@@ -56,6 +56,32 @@ class GenerateCommand extends Command
         $has_ts_types = (bool) $this->option('ts-types');
         $has_interface = (bool) $this->option('interface');
         $props = $this->option('props');
+
+        if (! $name || ! is_string($name)) {
+            $this->components->error("The --name option is required and must be a string.");
+            return self::FAILURE;
+        }
+
+        if (! $type || ! is_string($type)) {
+            $this->components->error("The --type option is required and must be a string.");
+            return self::FAILURE;
+        }
+
+        if (! in_array($type, ['pages', 'components', 'layouts'])) {
+            $this->components->error("Invalid type specified. Following artifact types are supported: 'pages', 'components', 'layouts'.");
+            return self::FAILURE;
+        }
+
+        if ( $props !== null && !is_string($props) ) {
+            $this->components->error("The --props option must be a string in the format 'propName:propType;anotherProp:anotherType'.");
+            return self::FAILURE;
+        }
+
+        if ((isset($props) && is_string($props)) && ! ($has_ts_types || $has_interface) ) {
+            $this->components->error("The --props option requires either --ts-types or --interface to be set.");
+            return self::FAILURE;
+        }
+
         // generate the file using the appropriate stub based on the detected framework and provided type/name
         $this->generate(
             type: $type,
@@ -84,13 +110,6 @@ class GenerateCommand extends Command
      */
     protected function generate(string $type, string $name, string $stack, bool $force, bool $has_ts_types, bool $has_interface, ?string $props = null): void
     {
-        // only allow --props if either --ts-types or --interface option is set
-        // since props can only be generated if there is a type or interface
-        if ((isset($props) && is_string($props)) && ! ($has_ts_types || $has_interface) ) {
-            $this->components->error('The --props option requires either --ts-types or --interface to be set.');
-            return;
-        }
-
         $folder = "";
         if ( str_contains($name, '/') ) {
             $parts = explode('/', $name);
@@ -116,7 +135,6 @@ class GenerateCommand extends Command
         $stubContent = str_replace('{{ name }}', $name, $stubContent);
 
         $parsedProps = [];
-
         if (is_string($props) && trim($props) !== '') {
             $parsedProps = array_map(function(string $rawProp): array {
                 $parts = array_map('trim', explode(':', $rawProp, 2));
@@ -142,6 +160,8 @@ class GenerateCommand extends Command
             $parsedProps
         ));
 
+        // build vue-specific TS field lines (e.g. " propName: '',")
+        // example: defineProps({ prop1: '', prop2: '', prop3: '' })
         $vueTypeProps = implode("\n", array_map(
             fn(array $prop): string => " {$prop['name']}: '',",
             $parsedProps

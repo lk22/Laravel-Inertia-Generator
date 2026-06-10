@@ -138,10 +138,9 @@ Notes:
 
 The package is in a good state for setup + generation, but these improvements are still recommended:
 
-1. Adding support for svelte components, pages, layouts.
-2. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
-3. Adding support for custom template stubs
-4. Expand automated tests for generation command behavior across all stacks and all types.
-5. Adding support for adding tests for each generated page, component or layout files
+1. Add stronger validation and user-friendly errors for invalid `--type`, missing `--name`, and missing stubs.
+2. Adding support for custom template stubs
+3. Expand automated tests for generation command behavior across all stacks and all types.
+4. Adding support for adding tests for each generated page, component or layout files
 5. Add end-to-end command examples in README that match the exact generated file names in current implementation.
 6. Add optional video demo or GIF walkthrough of install + generate flow.
