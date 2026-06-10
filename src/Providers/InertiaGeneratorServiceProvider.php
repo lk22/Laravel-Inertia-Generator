@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 
 use Leoknudsen\LaravelInertiaGenerator\Commands\InstallCommand;
 use Leoknudsen\LaravelInertiaGenerator\Commands\GenerateCommand;
+use Leoknudsen\LaravelInertiaGenerator\Commands\GenerateUtilityCommand;
 use Leoknudsen\LaravelInertiaGenerator\Commands\DetectFrameworkCommand;
 use Leoknudsen\LaravelInertiaGenerator\Commands\ReleaseCustomStubsCommand;
 use Leoknudsen\LaravelInertiaGenerator\Support\FrameworkProfileRepository as FrameworkProfile;
@@ -48,6 +49,7 @@ class InertiaGeneratorServiceProvider extends ServiceProvider
             $this->commands([
                 InstallCommand::class,
                 GenerateCommand::class,
+                GenerateUtilityCommand::class,
                 DetectFrameworkCommand::class,
                 ReleaseCustomStubsCommand::class,
             ]);

@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 /*
 * Describe your hook here...
 */
-export function use{{ hookName }}() {
+export function use{{ name }}() {
     const [hookState, setHookState] = useState();
 
     useEffect(() => {}, [])

@@ -6,18 +6,19 @@ use Illuminate\Console\Command;
 
 use Leoknudsen\LaravelInertiaGenerator\Support\FrontendFrameworkDetector;
 
+use Illuminate\Filesystem\Filesystem;
+
 class GenerateUtilityCommand extends Command
 {
     protected $signature = 'inertia:util:generate
-    {--name : The name of the utility to generate (e.g. "FormHelper")}
+    {--name= : The name of the utility to generate (e.g. "FormHelper")}
     {--stack= : The frontend stack to generate for (e.g. "react", "vue", "svelte"). If not provided, the stack will be detected automatically.)}
-    {--type= : The type of utility to generate (e.g. "hook", "lib", "composable", "helper", "service", "util"). This will determine the stub used for generation.)
-    Available types = (React: "hook", "lib", "utli", "types", Vue: "composable", "lib", "util", Svelte: "lib", "util")}
+    {--type= : The type of utility to generate (e.g. "hook", "lib", "composable", "helper", "service", "util"). This will determine the stub used for generation.) Available types = (React: "hook", "lib", "utli", "types", Vue: "composable", "lib", "util", Svelte: "lib", "util")}
     {--force : Force overwrite of existing files}';
 
     protected $description = 'Generate a utility file (e.g. React hook, Vue composable) for the detected or specified frontend stack.';
 
-    public function handle(): int
+    public function handle(Filesystem $files, FrontendFrameworkDetector $detector): int
     {
         $name = $this->option('name');
         $stack = $this->option('stack');
@@ -40,7 +41,6 @@ class GenerateUtilityCommand extends Command
             $this->info("No stack specified. Attempting to auto-detect frontend framework...");
 
             try {
-                $detector = app(FrontendFrameworkDetector::class);
                 $detectionResult = $detector->detect();
                 $detectedStack = $detectionResult->profile->name;
                 $this->info("Auto-detected frontend framework: '$detectedStack'");
@@ -65,9 +65,63 @@ class GenerateUtilityCommand extends Command
         }
 
         $sourcePath = dirname(__FILE__, 3) . "/stubs/" . ($stack ?? $detectedStack) . "/$type.stub";
-        $stubContent = get_file_contents($sourcePath);
-        $stubContent = str_replace('{{ name }}', $name, $stubContent);
+        $stubContent = file_get_contents($sourcePath);
+
+        $this->generateFromStub($files, $stubContent, $name, $stack ?? $detectedStack, $type, $force);
 
         return self::SUCCESS;
+    }
+
+    private function generateFromStub(Filesystem $files, string $stubContent, string $name, string $stack, string $type, bool $force): void
+    {
+
+        $sourcePath = "";
+
+        if ( config('laravel-inertia-generator.custom_stubs_path') ) {
+            $sourcePath = config('laravel-inertia-generator.custom_stubs_path') . "/{$stack}/{$type}.stub";
+            if ( ! file_exists($sourcePath) ) {
+                $this->info("Custom stub file not found for stack '{$stack}' and type '{$type}' at expected path: $sourcePath. Falling back to package stub.");
+                $sourcePath = dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub";
+            }
+        } else {
+            $sourcePath = dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub";
+        }
+
+         if ( ! file_exists($sourcePath) ) {
+            $this->error("Stub file not found for stack '{$stack}' and type '{$type}' at expected path: $sourcePath");
+            return;
+        }
+
+        $stubContent = file_get_contents($sourcePath);
+
+        $formatNamePlaceholder = fn($name, $type) => ($type === "types" ? ucfirst($name) : $name);
+        $stubContent = str_replace('{{ name }}', $formatNamePlaceholder($name, $type), $stubContent);
+
+        $targetDirectory = base_path("resources/js/{$type}");
+        if ( ! is_dir($targetDirectory) ) {
+            $files->makeDirectory($targetDirectory, 0755, true);
+        }
+
+        $targetDirectory = match ($type) {
+            'hook' => base_path("resources/js/hooks"),
+            'composable' => base_path("resources/js/composables"),
+            'lib' => base_path("resources/js/lib"),
+            'util' => base_path("resources/js/utils"),
+            'types' => base_path("resources/js/types"),
+            default => base_path("resources/js/{$type}"),
+        };
+
+        $targetName = match ($type) {
+            'hook' => 'use' . ucfirst($name),
+            'composable' => 'use' . ucfirst($name),
+            default => $name,
+        };
+
+        if ( ! $force && file_exists("$targetDirectory/{$targetName}.ts") ) {
+            $this->error("File already exists at $targetDirectory/{$targetName}.ts. Use --force to overwrite.");
+            return;
+        }
+
+        $files->put("$targetDirectory/{$targetName}.ts", $stubContent);
     }
 }

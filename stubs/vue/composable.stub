@@ -1,0 +1,10 @@
+import type { InertiaLinkProps } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
+import type { ComputedRef, DeepReadonly } from 'vue';
+import { computed, readonly } from 'vue';
+
+export type Use{{ name }}Prop = {};
+
+export function use{{ name }}(): UseInitialsReturn {
+    return { getInitials };
+}
