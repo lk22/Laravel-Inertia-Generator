@@ -31,6 +31,7 @@ abstract class TestCase extends OrchestraTestCase
         // get the original config and write it to the workbench config directory to ensure it's available for tests that need it
         $originalConfigPath = __DIR__ . '/../config/laravel-inertia-generator.php';
         $workbenchConfigPath = self::workbenchPath('/config/laravel-inertia-generator.php');
+
         if ($this->files->exists($originalConfigPath)) {
             $this->files->copy($originalConfigPath, $workbenchConfigPath);
         }

@@ -1,0 +1,15 @@
+/*
+* Dependency imports
+*/
+import { useState, useEffect } from 'react'
+
+/*
+* Describe your hook here...
+*/
+export function use{{ hookName }}() {
+    const [hookState, setHookState] = useState();
+
+    useEffect(() => {}, [])
+
+    return;
+}

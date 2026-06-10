@@ -1,0 +1,6 @@
+/*
+* Describe your utility function here...
+*/
+export function {{ utilname }}() {
+    return true;
+}

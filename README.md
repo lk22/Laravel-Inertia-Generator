@@ -153,6 +153,8 @@ Notes:
 The package is in a good state for setup + generation, but these improvements are still recommended:
 
 1. Adding support for adding tests for each generated page, component or layout files
-2. Expand automated tests for generation command behavior across all stacks and all types.
-4. Add end-to-end command examples in README that match the exact generated file names in current implementation.
-5. Add optional video demo or GIF walkthrough of install + generate flow.
+2. Adding support for react custom hooks, libraries, type libraries
+3. Adding support for Vue composables, libraries, etc.
+4. Expand automated tests for generation command behavior across all stacks and all types.
+5. Add end-to-end command examples in README that match the exact generated file names in current implementation.
+6. Add optional video demo or GIF walkthrough of install + generate flow.
