@@ -15,8 +15,13 @@ class DetectFrameworkCommand extends Command
     public function handle(FrontendFrameworkDetector $detector): int
     {
         try {
-            $detectedFramework = $detector->detect();
-            $this->info("Detected frontend framework: " . $detectedFramework->profile->label());
+            if ( ! config('laravel-inertia-generator.default_framework') ) {
+                $this->info("No default framework configured. Attempting to auto-detect frontend framework...");
+                $detectedFramework = $detector->detect();
+                $this->info("Detected frontend framework: " . $detectedFramework->profile->label());
+            } else {
+                $this->info("Default framework configured: '" . config('laravel-inertia-generator.default_framework') . "'. Attempting to detect frontend framework based on configuration...");
+            }
 
             return Command::SUCCESS;
         } catch (\Exception $e) {

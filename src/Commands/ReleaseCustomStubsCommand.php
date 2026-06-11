@@ -17,13 +17,21 @@ class ReleaseCustomStubsCommand extends Command
         FrontendFrameworkDetector $frameworkDetector
     ): int {
 
-        $frameworkProfile = $frameworkDetector->detect();
-        $this->info("Detected frontend framework: " . $frameworkProfile->profile->label());
+        if ( ! config('laravel-inertia-generator.default_framework') ) {
+            $this->info("No default framework configured. Please run 'php artisan inertia-generator:install' to detect and set the default frontend framework before publishing custom stubs.");
+            $frameworkProfile = $frameworkDetector->detect();
+            $this->info("Detected frontend framework: " . $frameworkProfile->profile->label());
+        }
+
+        if (! config('laravel-inertia-generator.custom_stubs_path') ) {
+            $this->error("No custom stubs path defined in config. Please set 'custom_stubs_path' in the configuration file to use this command.");
+            return self::FAILURE;
+        }
 
         $customStubsPath = config('laravel-inertia-generator.custom_stubs_path');
 
         if ( ! $customStubsPath ) {
-            $$this->error("No custom stubs path defined in config. Please set 'custom_stubs_path' in the configuration file to use this command.");
+            $this->error("No custom stubs path defined in config. Please set 'custom_stubs_path' in the configuration file to use this command.");
             return self::FAILURE;
         }
 
