@@ -33,9 +33,13 @@ class GenerateCommand extends Command
     public function handle(FrontendFrameworkDetector $detector): int
     {
         try {
-            $framework = $this->option('stack') !== null && $this->option('stack') !== ''
-                ? $detector->detect($this->option('stack'))
-                : $detector->detect();
+            if (! config('laravel-inertia-generator.default_framework')) {
+                $this->info("No default framework configured. Attempting to auto-detect frontend framework...");
+
+                $framework = $this->option('stack') !== null && $this->option('stack') !== ''
+                    ? $detector->detect($this->option('stack'))
+                    : $detector->detect();
+            }
         } catch (CouldNotDetectFrameworkException|InvalidArgumentException $e) {
             $this->components->error($e->getMessage());
             return self::FAILURE;

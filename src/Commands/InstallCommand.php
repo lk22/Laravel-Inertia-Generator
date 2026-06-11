@@ -27,10 +27,15 @@ class InstallCommand extends Command
             } else {
                 $framework = $detector->detect();
             }
+
+            // set the detected framework as the default framework in the config for use in other commands
+            config(['inertia-generator.default_framework' => $framework->profile->name]);
         } catch (CouldNotDetectFrameworkException|InvalidArgumentException $e) {
             $this->components->error($e->getMessage());
             return Command::FAILURE;
         }
+
+        $this->info("Publishing configuration file...");
 
         $this->call('vendor:publish', [
             '--tag' => 'inertia-generator-config',

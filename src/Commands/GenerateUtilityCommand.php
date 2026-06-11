@@ -37,16 +37,21 @@ class GenerateUtilityCommand extends Command
 
         $detectedStack = null;
 
-        if ( ! $stack ) {
-            $this->info("No stack specified. Attempting to auto-detect frontend framework...");
+        // if no default framework is configured, attempt to auto-detect the framework (either from the provided --stack option or by auto-detection)
+        if (! config('laravel-inertia-generator.default_framework') ) {
+            $this->info("No default framework configured. Attempting to auto-detect frontend framework...");
 
-            try {
-                $detectionResult = $detector->detect();
-                $detectedStack = $detectionResult->profile->name;
-                $this->info("Auto-detected frontend framework: '$detectedStack'");
-            } catch (\Exception $e) {
-                $this->error("Failed to auto-detect frontend framework: " . $e->getMessage());
-                return self::FAILURE;
+            if ( ! $stack ) {
+                $this->info("No stack specified. Attempting to auto-detect frontend framework...");
+
+                try {
+                    $detectionResult = $detector->detect();
+                    $detectedStack = $detectionResult->profile->name;
+                    $this->info("Auto-detected frontend framework: '$detectedStack'");
+                } catch (\Exception $e) {
+                    $this->error("Failed to auto-detect frontend framework: " . $e->getMessage());
+                    return self::FAILURE;
+                }
             }
         }
 
