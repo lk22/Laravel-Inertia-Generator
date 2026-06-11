@@ -17,6 +17,8 @@ class ReleaseCustomStubsCommand extends Command
         FrontendFrameworkDetector $frameworkDetector
     ): int {
 
+        $frameworkProfile = null;
+
         if ( ! config('laravel-inertia-generator.default_framework') ) {
             $this->info("No default framework configured. Please run 'php artisan inertia-generator:install' to detect and set the default frontend framework before publishing custom stubs.");
             $frameworkProfile = $frameworkDetector->detect();

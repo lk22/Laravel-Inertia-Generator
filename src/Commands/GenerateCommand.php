@@ -32,6 +32,7 @@ class GenerateCommand extends Command
      */
     public function handle(FrontendFrameworkDetector $detector): int
     {
+        $framework = null;
         try {
             if (! config('laravel-inertia-generator.default_framework')) {
                 $this->info("No default framework configured. Attempting to auto-detect frontend framework...");
