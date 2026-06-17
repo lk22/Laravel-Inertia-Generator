@@ -112,6 +112,12 @@ php artisan inertia:generate --type=pages --name=ReportComponent --interface --p
 ## current state
 Current state for this package is currently in development, if you think this is a interesting package and maybe want to contribute in anyway, let me know :)
 
+## Next feature to come
+Adding support for auto generating basic testing file for a generated source with follow flag --has-tests in inertia:generate command
+```bash
+php artisan inertia:generate --typepages --name=PageResource --has-tests
+```
+
 ## newest feature
 Added  support for using custom stubs generatable from own custom path
 This feature takes all default stubs and copy them to your own path, so you have a opportunity to refactor them as needed
@@ -152,8 +158,8 @@ Notes:
 
 The package is in a good state for setup + generation, but these improvements are still recommended:
 
-1. Adding custom templating for component markup for generated components
-2. Adding support for adding tests for each generated page, component or layout files
+1. Adding support for adding tests for each generated page, component or layout files
+2. Adding custom templating for component markup for generated components
 3. Adding support for react custom hooks, libraries, type libraries
 4. Adding support for Vue composables, libraries, etc.
 5. Expand automated tests for generation command behavior across all stacks and all types.
