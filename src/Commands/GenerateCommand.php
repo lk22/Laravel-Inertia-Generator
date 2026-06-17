@@ -21,9 +21,6 @@ class GenerateCommand extends Command
         {--has-tests : Whether to generate tests for the resource (if supported by the detected framework)}";
 
     protected $description = 'Generate an Inertia page/component based on the detected frontend framework';
-    protected string $type;
-    protected string $stack;
-    protected bool $force;
 
     /**
      * Command handler
@@ -66,6 +63,26 @@ class GenerateCommand extends Command
         $props = $this->option('props');
         $has_tests = (bool) $this->option('has-tests');
 
+        if ( $has_tests && ! $detector->detectTestingFramework() ) {
+            if ( $framework === "react") {
+                $this->components->error("Cannot generate tests because no testing framework was detected. Please install and configure a supported testing framework such as React Testing Library \n install it by running 'npm install @testing-library/react' and ensure it is listed as a dependency in your package.json file.");
+
+                return self::FAILURE;
+            }
+
+            if ( $framework === "vue") {
+                $this->components->error("Cannot generate tests because no testing framework was detected. Please install and configure a supported testing framework such as Vue Test Utils \n install it by running 'npm install @vue/test-utils' and ensure it is listed as a dependency in your package.json file.");
+
+                return self::FAILURE;
+            }
+
+            if ( $framework === "svelte") {
+                $this->components->error("Cannot generate tests because no testing framework was detected. Please install and configure a supported testing framework such as Svelte Testing Library \n install it by running 'npm install @testing-library/svelte' and ensure it is listed as a dependency in your package.json file.");
+
+                return self::FAILURE;
+            }
+        }
+
         if (! $name || ! is_string($name)) {
             $this->components->error("The --name option is required and must be a string.");
             return self::FAILURE;
@@ -99,7 +116,8 @@ class GenerateCommand extends Command
             force: $force,
             has_ts_types: $has_ts_types,
             has_interface: $has_interface,
-            props: $props
+            props: $props,
+            has_tests: $has_tests
         );
 
         return Command::SUCCESS;
@@ -115,9 +133,10 @@ class GenerateCommand extends Command
      * @param bool $has_ts_types whether to generate TypeScript types (if supported by the detected framework)
      * @param bool $has_interface whether to generate an interface for the resource (if supported by the detected framework)
      * @param mixed $props a semicolon-separated list of props to include in the generated type or interface definition, in the format "propName: propType; anotherProp: anotherType" (only applicable if --ts-types or --interface is set)
+     * @param bool $has_tests whether to generate tests for the resource (if supported by the detected framework)
      * @return void
      */
-    protected function generate(string $type, string $name, string $stack, bool $force, bool $has_ts_types, bool $has_interface, ?string $props = null): void
+    protected function generate(string $type, string $name, string $stack, bool $force, bool $has_ts_types, bool $has_interface, ?string $props = null, ?bool $has_tests = false): void
     {
         $folder = "";
         if ( str_contains($name, '/') ) {
@@ -125,7 +144,7 @@ class GenerateCommand extends Command
             $name = array_pop($parts);
             $folder = implode('/', $parts) . '/';
 
-            // nake sure the folder exists
+            // make sure the folder exists
             if (! file_exists(base_path("resources/js/{$type}/{$folder}")) ) {
                 mkdir(base_path("resources/js/{$type}/{$folder}"), 0755, true);
             }
@@ -140,11 +159,29 @@ class GenerateCommand extends Command
         // write the file to the appropriate location, checking for existing files if $force is false
         $this->info("Attempting to retrieve stub for stack '{$stack}' and type '{$type}'...\n");
 
-        $stubContent = $this->get_stub_for_profile($stack, $type);
+        // main resource stub (e.g. component/page/layout)
+        $stubContent = $this->get_stub_for_profile($stack, $type, false);
+
+        // Test stub (e.g. component.test/page.test/layout.test)
+        $testStubContent = $this->get_stub_for_profile($stack, $type, true);
+
+         if (! $stubContent) {
+            $this->error("Failed to retrieve stub content for stack '{$stack}' and type '{$type}'. Aborting generation.");
+            return;
+        }
+
+         if ($has_tests && ! $testStubContent) {
+            $this->error("Failed to retrieve test stub content for stack '{$stack}' and type '{$type}-test'. Aborting generation.");
+            return;
+        }
+
         $stubContent = str_replace('{{ name }}', $name, $stubContent);
+        $testStubContent = str_replace('{{ name }}', $name, $testStubContent);
 
         $parsedProps = [];
         if (is_string($props) && trim($props) !== '') {
+            $filteredProps = array_filter(array_map('trim', explode(';', $props)));
+
             $parsedProps = array_map(function(string $rawProp): array {
                 $parts = array_map('trim', explode(':', $rawProp, 2));
 
@@ -157,7 +194,7 @@ class GenerateCommand extends Command
                     'name' => $parts[0],
                     'type' => $parts[1]
                 ];
-            }, array_filter(array_map('trim', explode(';', $props))));
+            }, $filteredProps);
         }
 
         // Build a comma-separated list of props for the component definition (e.g. "prop1, prop2, prop3")
@@ -187,13 +224,14 @@ class GenerateCommand extends Command
             $typeScriptTypeDefinition = "type {$name}Props = {\n{$typeProps}\n};";
             $stubContent = str_replace('{{ typeDefinition }}', $typeScriptTypeDefinition, $stubContent);
             $stubContent = str_replace('{{ TypeName }}', "{$name}Props", $stubContent);
-        } elseif ($has_interface) {
+        } else if ($has_interface) {
             $interfaceDefinition = "interface {$name}Props {\n{$typeProps}\n}";
             $stubContent = str_replace('{{ typeDefinition }}', $interfaceDefinition, $stubContent);
             $stubContent = str_replace('{{ TypeName }}', "{$name}Props", $stubContent);
         }
 
         $this->info("Generated stub content:\n" . $stubContent);
+        $this->info("Generated test stub content:\n" . $testStubContent);
 
         $extension = match($stack) {
             'react' => 'tsx',
@@ -201,6 +239,10 @@ class GenerateCommand extends Command
             'svelte' => 'svelte',
             default => 'txt'
         };
+
+        $testFilePath = ($folder !== '')
+            ? base_path("resources/js/{$type}/{$folder}{$name}.test.{$extension}")
+            : base_path("resources/js/{$type}/{$name}.test.{$extension}");
 
         $filePath = ($folder !== '')
             ? base_path("resources/js/{$type}/{$folder}{$name}.{$extension}")
@@ -212,8 +254,16 @@ class GenerateCommand extends Command
             return;
         }
 
+        if ( file_exists($testFilePath) && ! $force ) {
+            $this->error("Test file already exists at {$testFilePath}. Use --force to overwrite.");
+            return;
+        }
+
         file_put_contents($filePath, $stubContent);
+        file_put_contents($testFilePath, $testStubContent);
+
         $this->info("File generated at: {$filePath}");
+        $this->info("Test file generated at: {$testFilePath}");
     }
 
     /**
@@ -223,54 +273,32 @@ class GenerateCommand extends Command
      * @param string $type
      * @return bool|string
      */
-    protected function get_stub_for_profile(string $stack, string $type): string
+    protected function get_stub_for_profile(string $stack, string $type, bool $has_tests): string
     {
         $stubContent = '';
+        $stubPath = '';
 
-        $stubPath = config('laravel-inertia-generator.custom_stubs_path')
-            ? config('laravel-inertia-generator.custom_stubs_path') . "/{$type}.stub"
-            : dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub";
+        if ( $has_tests ) {
+            $this->info("Attempting to retrieve test stub for stack '{$stack}' and type '{$type}.test'...\n");
+            $stubPath = config('laravel-inertia-generator.custom_stubs_path')
+                ? config('laravel-inertia-generator.custom_stubs_path') . "/{$stack}/{$type}.test.stub"
+                : dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.test.stub";
+        } else {
+            $this->info("Attempting to retrieve main stub for stack '{$stack}' and type '{$type}'...\n");
+            $stubPath = config('laravel-inertia-generator.custom_stubs_path')
+                ? config('laravel-inertia-generator.custom_stubs_path') . "/{$stack}/{$type}.stub"
+                : dirname(__FILE__, 3) . "/stubs/{$stack}/{$type}.stub";
+        }
 
         $stubContent = file_get_contents($stubPath);
 
-         if (! $stubContent) {
+        if (! $stubContent) {
             $this->error("No template found for framework '{$stack}' and type '{$type}' at expected path: {$stubPath}.");
             return '';
-         }
+        }
 
-         $this->info("Successfully retrieved stub content for stack '{$stack}' and type '{$type}' from path: {$stubPath}.\n");
+        $this->info("Successfully retrieved stub content for stack '{$stack}' and type '{$type}' from path: {$stubPath}.\n");
 
-         return $stubContent;
-    }
-
-    /**
-     * Getting placeholders for a spcificic type
-     *
-     * @param string $type
-     * @return string[] | array
-     */
-    protected function get_placeholders_for_type(string $type): array
-    {
-        return match($type) {
-            'pages' => [
-                '{{ name }}',
-                '{{ TypeName }}',
-                '{{ TypeProps }}',
-                '{{ props }}'
-            ],
-            'components' => [
-                '{{ name }}',
-                '{{ TypeName }}',
-                '{{ TypeProps }}',
-                '{{ props }}'
-            ],
-            'layouts' => [
-                '{{ name }}',
-                '{{ TypeName }}',
-                '{{ TypeProps }}',
-                '{{ props }}'
-            ],
-            default => []
-        };
+        return $stubContent;
     }
 }

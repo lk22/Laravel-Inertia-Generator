@@ -162,6 +162,6 @@ The package is in a good state for setup + generation, but these improvements ar
 2. Adding custom templating for component markup for generated components
 3. Adding support for react custom hooks, libraries, type libraries
 4. Adding support for Vue composables, libraries, etc.
-5. Expand automated tests for generation command behavior across all stacks and all types.
+5. reworking commands to use Laravel/Prompts package
 6. Add end-to-end command examples in README that match the exact generated file names in current implementation.
 7. Add optional video demo or GIF walkthrough of install + generate flow.

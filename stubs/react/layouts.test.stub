@@ -6,8 +6,8 @@ import {{ name }} from '@/layouts/{{ name }}'
 
 describe('{{ name }}', () => {
     test('{{ name }} renders successfully', () => {
-        const component = render(<{{name}} />);
+        const component = render(<{{ name }} />);
 
-        expect(component).toBeInDocument();
+        expect(component).toBeInTheDocument();
     })
 })
