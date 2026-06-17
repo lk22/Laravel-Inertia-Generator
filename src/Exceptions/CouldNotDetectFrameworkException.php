@@ -32,4 +32,12 @@ class CouldNotDetectFrameworkException extends RuntimeException
     {
         return new self("Missing configuration: " . $message . " (Configuration key: " . $configKey . ")");
     }
+
+    public static function testingFrameworkWithoutPackageJson(string $stack): self
+    {
+        return new self(sprintf(
+            "Cannot detect testing framework '%s' because no package.json file was found. Please ensure you have a package.json file in your project root with the appropriate testing framework dependencies, or adjust the 'testing_framework' configuration to null to skip testing framework detection.",
+            $stack
+        ));
+    }
 }

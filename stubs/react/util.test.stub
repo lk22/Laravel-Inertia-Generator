@@ -1,0 +1,11 @@
+import { render, screen } from '@testing-library/react'
+import { vi, test, describe, expect } from 'vitest'
+
+import { {{ utilname }} } from '@/util/{{ utilname }}'
+
+describe('{{ utilname }}', () => {
+    test('{{ utilname }} returns true', () => {
+        const utility = {{ utilname }}();
+        expect(utility).toBe(true);
+    })
+})

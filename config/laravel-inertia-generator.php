@@ -3,6 +3,7 @@
 return [
     'output_directory' => 'inertia', // Directory where generated files will be placed
     'default_framework' => 'react', // Set to 'react', 'vue', or 'svelte' to skip detection and default to a specific framework
+    'testing_framework' => 'react-testing-library',
 
     'frameworks' => [
         'react' => [

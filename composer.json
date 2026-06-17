@@ -3,7 +3,8 @@
     "require": {
         "illuminate/console": "^13.11",
         "illuminate/filesystem": "^13.11",
-        "illuminate/support": "^13.11"
+        "illuminate/support": "^13.11",
+        "laravel/prompts": "^0.3.18"
     },
     "require-dev": {
         "orchestra/testbench": "^11.1",

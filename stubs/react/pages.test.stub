@@ -1,0 +1,13 @@
+import { JSX } from 'react'
+import { render, screen } from '@testing-library/react'
+import { vi, test, describe, expect } from 'vitest'
+
+import {{ name }} from '@/pages/{{ name }}'
+
+describe('{{ name }}', () => {
+    test('{{ name }} renders successfully', () => {
+        const component = render(<{{name}} />);
+
+        expect(component).toBeInDocument();
+    })
+})

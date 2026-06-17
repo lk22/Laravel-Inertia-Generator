@@ -17,7 +17,8 @@ class GenerateCommand extends Command
         {--ts-types : Whether to generate TypeScript types (if supported by the detected framework)}
         {--interface : Whether to generate an interface for the resource (if supported by the detected framework)}
         {--props= : Whether to include a props definition in the generated type or interface definition (if supported by the detected framework and if --ts-types or --interface is set)}
-        {--force : Overwrite existing files without prompting}";
+        {--force : Overwrite existing files without prompting}
+        {--has-tests : Whether to generate tests for the resource (if supported by the detected framework)}";
 
     protected $description = 'Generate an Inertia page/component based on the detected frontend framework';
     protected string $type;
@@ -63,6 +64,7 @@ class GenerateCommand extends Command
         $has_ts_types = (bool) $this->option('ts-types');
         $has_interface = (bool) $this->option('interface');
         $props = $this->option('props');
+        $has_tests = (bool) $this->option('has-tests');
 
         if (! $name || ! is_string($name)) {
             $this->components->error("The --name option is required and must be a string.");
