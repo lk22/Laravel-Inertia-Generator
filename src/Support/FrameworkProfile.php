@@ -47,7 +47,7 @@ readonly class FrameworkProfile
     return $this->extensions[$type] ?? '';
   }
 
-  public function label(): string
+  public function getLabel(): string
   {
     return $this->label;
   }

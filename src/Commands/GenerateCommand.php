@@ -32,7 +32,9 @@ class GenerateCommand extends Command
      */
     public function handle(FrontendFrameworkDetector $detector): int
     {
-        $framework = null;
+        $framework = config('laravel-inertia-generator.default_framework')
+            ? $detector->detect(config('laravel-inertia-generator.default_framework'))
+            : null;
         try {
             if (! config('laravel-inertia-generator.default_framework')) {
                 $this->info("No default framework configured. Attempting to auto-detect frontend framework...");
@@ -48,7 +50,7 @@ class GenerateCommand extends Command
 
         $this->components->info(sprintf(
             'Detected %s via %s: %s',
-            $framework->profile->label(),
+            $framework->profile->getLabel(),
             $framework->source,
             $framework->evidence
         ));

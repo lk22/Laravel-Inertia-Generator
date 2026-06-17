@@ -77,9 +77,19 @@ class GenerateUtilityCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * Generatiing utility resource from a given soruce containing stub content
+     *
+     * @param Filesystem $files
+     * @param string $stubContent
+     * @param string $name
+     * @param string $stack
+     * @param string $type
+     * @param bool $force
+     * @return void
+     */
     private function generateFromStub(Filesystem $files, string $stubContent, string $name, string $stack, string $type, bool $force): void
     {
-
         $sourcePath = "";
 
         if ( config('laravel-inertia-generator.custom_stubs_path') ) {

@@ -28,7 +28,7 @@ class StubPublisher
         ];
 
         $replacements = [
-            '{{ framework_label }}' => $profile->label(),
+            '{{ framework_label }}' => $profile->getLabel(),
             '{{ adapter_package }}' => $profile->adapter,
             '{{ componentImportPath }}' => $this->relativeImportPath($targets['page'], $targets['component']),
             '{{ layoutImportPath }}' => $this->relativeImportPath($targets['page'], $targets['layout']),
@@ -47,7 +47,7 @@ class StubPublisher
             }
 
             $stubPath = $this->packagePath . '/stubs/' . $profile->stubSet . '/' . $type . '.stub';
-            if (! $this->files->exists($stubPath)) {
+            if ( ! $this->files->exists($stubPath) ) {
                 throw new RuntimeException("Stub file not found for type '$type' at expected path: $stubPath");
             }
 
@@ -64,7 +64,7 @@ class StubPublisher
         return array_values($targets);
     }
 
-    public function publishToCustomPath(string $customPath, bool $force = false, FrameworkProfile $profile): array {
+    public function publishToCustomPath(string $customPath, bool $force, FrameworkProfile $profile): array {
 
         $sourcePath = $this->packagePath . '/stubs/' . '/' . $profile->stubSet . '/';
         $allFiles = $this->files->allFiles($sourcePath);

@@ -32,7 +32,7 @@ class InstallCommand extends Command
             config(['inertia-generator.default_framework' => $framework->profile->name]);
         } catch (CouldNotDetectFrameworkException|InvalidArgumentException $e) {
             $this->components->error($e->getMessage());
-            return Command::FAILURE;
+            return self::FAILURE;
         }
 
         $this->info("Publishing configuration file...");
@@ -48,7 +48,7 @@ class InstallCommand extends Command
         $this->info('Inertia extension stubs published successfully.');
         $this->info('Inertia extension installation complete!');
 
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 
     private function validateStack(string $stack): void
