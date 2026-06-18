@@ -165,3 +165,10 @@ The package is in a good state for setup + generation, but these improvements ar
 5. reworking commands to use Laravel/Prompts package
 6. Add end-to-end command examples in README that match the exact generated file names in current implementation.
 7. Add optional video demo or GIF walkthrough of install + generate flow.
+
+
+## Bugs that needs fixing
+
+Here lists the things that needs a fix for the particular features
+
+1. add check for type or interface allowance in generated resource step - bug right now renders {{ typeDefinition }} in generated template and empty parameter object in generated react resources
